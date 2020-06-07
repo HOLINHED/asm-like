@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 
    auto lexresult = lex(buffer);
 
-   /*
+   
    for (auto y : lexresult) {
       std::cout << "[ ";
       for (std::string x : y) {
@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
       }
       std::cout << "]\n";
    }
-   */
+   
   auto parseresult = parse(lexresult);
 
    delete buffer;
