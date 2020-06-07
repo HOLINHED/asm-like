@@ -1,0 +1,1 @@
+g++ main.cpp lexer.cpp -std=c++11
