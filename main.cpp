@@ -48,7 +48,13 @@ int main(int argc, char** argv) {
 
    auto lexresult = lex(buffer);
 
-   
+   for (auto y : lexresult) {
+      std::cout << "[ ";
+      for (std::string x : y) {
+         std::cout << x << ", ";
+      }
+      std::cout << "]\n";
+   }
 
    delete buffer;
 

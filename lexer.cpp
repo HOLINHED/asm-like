@@ -15,6 +15,7 @@ std::vector<std::string> lexline(std::string line, const size_t l = 1) {
    std::string toProcess = line;
    std::string* strToken = nullptr;
 
+   //TODO: Make it so it can tokenize multiple strings.
    if (line.find('"') != std::string::npos) {
 
       const size_t start = line.find_first_of('"');
