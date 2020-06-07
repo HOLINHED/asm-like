@@ -6,7 +6,7 @@ std::string trim(std::string str) {
    return std::regex_replace(str, std::regex("^ +| +$|( ) +"), "$1");
 }
 
-std::vector<std::string> lexline(std::string line, const size_t l = 0) {
+std::vector<std::string> lexline(std::string line, const size_t l = 1) {
    std::vector<std::string> result;
 
    //std::replace(line.begin(), line.end(), ',', ' ');
@@ -20,8 +20,9 @@ std::vector<std::string> lexline(std::string line, const size_t l = 0) {
       const size_t start = line.find_first_of('"');
       const size_t last = line.find_last_of('"');
 
-      if (start == std::string::npos || last == std::string::npos) {
-         std::cerr << "[LEX ERROR] Invalid string on line " << l << std::endl;
+      if (start == last || start == std::string::npos || last == std::string::npos) {
+         std::cerr << "[LEX ERROR] Invalid string on line " << l << std::endl
+                   << ":: " << l << "| " << line << std::endl;
          exit(1);
       }
 
@@ -57,7 +58,7 @@ std::vector<std::vector<std::string>> lex(std::stringstream *content) {
    std::vector<std::vector<std::string>> result;
 
     std::string line;
-    size_t ln = 0;
+    size_t ln = 1;
     while (std::getline(*content, line))  {
       line = std::regex_replace(line, std::regex(";[]*?.*"), "$1"); // ignore comments
       line = trim(line); // ignore whitespace
