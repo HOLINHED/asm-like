@@ -11,7 +11,6 @@ struct Instruction {
    std::vector<std::string> args;
 };
 
-const static size_t INSTRUCTION_SIZE = 20;
 const static std::string INSTRUCTION_IDS[] = 
 {
    "li",
@@ -35,6 +34,8 @@ const static std::string INSTRUCTION_IDS[] =
    "FLG_1",
    "FLG_2"
 };
+
+const static size_t INSTRUCTION_SIZE = sizeof(INSTRUCTION_IDS)/sizeof(INSTRUCTION_IDS[0]);
 
 int getInsType(std::string);
 
