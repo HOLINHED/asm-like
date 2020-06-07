@@ -48,6 +48,8 @@ int main(int argc, char** argv) {
 
    auto lexresult = lex(buffer);
 
+   
+
    delete buffer;
 
    return 0;

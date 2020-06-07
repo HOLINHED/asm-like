@@ -6,11 +6,12 @@
 #include <sstream>
 #include <regex>
 
-static std::string delimiter = " ";
+static char delimiter = ' ';
+static char arg_delimiter = ',';
 
 std::string trim(std::string);
 
-std::vector<std::string> lexline(std::string);
+std::vector<std::string> lexline(std::string, const size_t);
 
 // vector of vectors of strings
 std::vector<std::vector<std::string>> lex(std::stringstream*);
