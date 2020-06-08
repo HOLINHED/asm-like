@@ -6,9 +6,6 @@
 #include <sstream>
 #include <regex>
 
-static char delimiter = ' ';
-static char arg_delimiter = ',';
-
 std::string trim(std::string);
 
 std::vector<std::string> lexline(std::string, const size_t);

@@ -39,7 +39,7 @@ int getInsType(std::string str) {
    if (str == ".main") search = "FLG_2";
    if (str[str.size() - 1] == ':') search = "VAR";
 
-   for (int i = 0; i < INS_SIZE; i++) {
+   for (size_t i = 0; i < INS_SIZE; i++) {
       if (INS_ARR[i] == search) return i;
    }
 
@@ -48,7 +48,7 @@ int getInsType(std::string str) {
 
 std::map<std::string, int> labelList;
 
-Instruction parseVar(std::vector<std::string> line, Instruction& result, size_t ln = 1) {
+void parseVar(std::vector<std::string> line, Instruction& result, size_t ln = 1) {
    if (line.size() != 2) {
       std::cerr << "[Parse Error] variable name expected 1 argument. On line " << ln << std::endl;
       exit(1);
@@ -68,11 +68,9 @@ Instruction parseVar(std::vector<std::string> line, Instruction& result, size_t 
    result.args = line;
 
    result.arg_types = getArgTypeList(result.args);
-
-   return result;
 }
 
-Instruction parseLabel(std::vector<std::string> line, Instruction& result, size_t ln = 1) {
+void parseLabel(std::vector<std::string> line, Instruction& result, size_t ln = 1) {
    
 }
 

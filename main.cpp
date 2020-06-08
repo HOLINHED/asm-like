@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
    bool dump = false;
 
    if (argc >= 3) {
-      for (size_t i = 2; i < argc; i++) {
+      for (int i = 2; i < argc; i++) {
          std::string arg(argv[i]);
 
          if (arg == "-dump" || arg == "-d") {
@@ -58,8 +58,14 @@ int main(int argc, char** argv) {
       }
       std::cout << "]\n";
    }
+
+   std::cout << "PARSER RESULT:\n";
    
-  auto parseresult = parse(lexresult);
+   auto parseresult = parse(lexresult);
+
+   if (dump) {
+      std::cout << "This feature has not been implemented yet.\n";
+   }
 
    delete buffer;
 

@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+const char delimiter = ' ';
+const char arg_delimiter = ',';
+
 std::string trim(std::string str) {
    return std::regex_replace(str, std::regex("^ +| +$|( ) +"), "$1");
 }
