@@ -3,9 +3,13 @@
 
 #include <vector>
 #include <string>
+#include <map>
+
+#include "instruction_ids.h"
 
 struct Instruction {
    int type;
+   size_t size;
    std::string uid;
    size_t jmp_index;
    std::vector<std::string> args;
@@ -30,12 +34,22 @@ const static std::string INSTRUCTION_IDS[] =
    "ja",
    "ju",
    "jmp",
+   "mmov",
+   "mret",
+   "mcpy",
+   "band",
+   "bor",
+   "bsl",
+   "bsr",
    "LBL",
+   "VAR",
    "FLG_1",
-   "FLG_2"
+   "FLG_2",
 };
 
-const static size_t INSTRUCTION_SIZE = sizeof(INSTRUCTION_IDS)/sizeof(INSTRUCTION_IDS[0]);
+const static size_t INSTRUCTION_SIZE = sizeof(INSTRUCTION_IDS) / sizeof(INSTRUCTION_IDS[0]);
+
+static std::vector<std::string> INS_SET;
 
 int getInsType(std::string);
 

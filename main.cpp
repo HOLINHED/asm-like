@@ -3,6 +3,7 @@
 #include <fstream>
 #include "lexer.h"
 #include "parser.h"
+#include "evaluator.h"
 
 int main(int argc, char** argv) {
 
@@ -37,7 +38,7 @@ int main(int argc, char** argv) {
    std::ifstream file(argv[1]);
 
    if (!file) {
-      std::cerr << "Error loading file \"" << argv[1] << "\"\n";
+      std::cerr << "Error loading file \"" << argv[1] << "\".\n";
       exit(1);
    }
 
@@ -48,7 +49,8 @@ int main(int argc, char** argv) {
 
    auto lexresult = lex(buffer);
 
-   
+   // Lexer result test
+   std::cout << "LEXER RESULT:\n";
    for (auto y : lexresult) {
       std::cout << "[ ";
       for (std::string x : y) {
