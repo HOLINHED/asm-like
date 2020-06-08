@@ -72,6 +72,10 @@ Instruction parseVar(std::vector<std::string> line, Instruction& result, size_t 
    return result;
 }
 
+Instruction parseLabel(std::vector<std::string> line, Instruction& result, size_t ln = 1) {
+   
+}
+
 std::vector<Instruction> parse(std::vector<std::vector<std::string>> adt) {
 
    std::vector<Instruction> result;
