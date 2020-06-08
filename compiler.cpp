@@ -3,7 +3,8 @@
 #include <fstream>
 #include "lexer.h"
 #include "parser.h"
-#include "evaluator.h"
+#define DK9CFLAG 1
+#include "executor.h"
 
 int main(int argc, char** argv) {
 
@@ -16,11 +17,13 @@ int main(int argc, char** argv) {
       std::cout << "Usage: " << argv[0] << " <filename> <?args>\n\n"
                 << "-help (-h) Displays help for program.\n"
                 << "-dump (-d) Dumps values of each register into a file.\n"
+                << "-run (-r) Executes the program after compiling.\n"
                 ;
       exit(0);   
    }
 
    bool dump = false;
+   bool run = false;
 
    if (argc >= 3) {
       for (int i = 2; i < argc; i++) {
@@ -28,6 +31,9 @@ int main(int argc, char** argv) {
 
          if (arg == "-dump" || arg == "-d") {
             dump = true;
+         } 
+         else if (arg == "-run" || arg == "-r") {
+            run = true;
          } else {
             std::cerr << "Unrecognized argument \"" << arg << "\"\n";
             exit(1);
@@ -62,6 +68,10 @@ int main(int argc, char** argv) {
    std::cout << "PARSER RESULT:\n";
    
    auto parseresult = parse(lexresult);
+
+   if (run) {
+      std::cout << "This feature has not been implemented yet.\n";
+   }
 
    if (dump) {
       std::cout << "This feature has not been implemented yet.\n";

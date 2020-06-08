@@ -12,6 +12,7 @@ int main() {
       "syscall",
       "add",
       "sub",
+      "mul",
       "div",
       "mod",
       "copy",

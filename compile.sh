@@ -1,1 +1,1 @@
-g++ main.cpp lexer.cpp parser.cpp evaluator.cpp -Wall -std=c++11
+g++ compiler.cpp lexer.cpp parser.cpp executor.cpp -Wall -std=c++11

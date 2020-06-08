@@ -46,7 +46,7 @@ int getInsType(std::string str) {
    return -1;
 }
 
-std::map<std::string, int> labelList;
+std::map<std::string, size_t> labelList;
 
 void parseVar(std::vector<std::string> line, Instruction& result, size_t ln = 1) {
    if (line.size() != 2) {
@@ -72,6 +72,19 @@ void parseVar(std::vector<std::string> line, Instruction& result, size_t ln = 1)
 
 void parseLabel(std::vector<std::string> line, Instruction& result, size_t ln = 1) {
    
+   if (line.size() != 1) {
+      std::cerr << "[Parse Error] Label expects no arguments. On line " << ln << std::endl;
+      exit(1);
+   }
+
+   if (line[0] == ":") {
+      std::cerr << "[Parse Error] Label declaration expects a name. On line " << ln << std::endl;
+      exit(1);
+   }
+
+   result.uid = line[0].substr(1);
+
+   labelList[result.uid] = ln - 1;
 }
 
 std::vector<Instruction> parse(std::vector<std::vector<std::string>> adt) {

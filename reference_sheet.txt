@@ -1,0 +1,37 @@
+r = register
+d = data
+m = memory
+lbl = label
+
+-- CORE --
+li (int) - Loads an instruction into the flag ($B)
+la (r) - Sets pointer ($A) to a register.
+mov (r1, r2) | (d, r) - Moves data to register.
+syscall - Calls instruction in flag ($B)
+copy (r1, r2) - Copies data from r1 to r2.
+jmp (lbl) - Jumps to label (unconditional).
+mmov (r, m) | (d, m) - Moves data to memory.
+mret (m) - Retreives data from memory into $A.
+mcpy (m1, m2) - Copies memory from m1 to m2.
+
+-- MATH --
+add (r1, r2) | (d, r) | (r, d) | (d, d) - Performs addition on two data. Stores result in $A.
+sub (r1, r2) | (d, r) | (r, d) | (d, d) - Performs subtraction on two data. Stores result in $A.
+mul (r1, r2) | (d, r) | (r, d) | (d, d) - Performs multiplication on two data. Stores result in $A.
+div (r1, r2) | (d, r) | (r, d) | (d, d) - Performs division on two data. Stores result in $A.
+mod (r1, r2) | (d, r) | (r, d) | (d, d) - Performs modulo on two data. Stores result in $A.
+
+-- LOGIC -- 
+cmp (r1, r2) | (d, r) | (r, d) | (d1, d2) - Compares 2 data. 1 if arg1 > arg2, 0 if arg1 = arg2, -1 if arg1 < arg2.
+jeq (lbl) - Jumps to label if $A == 0
+jne (lbl) - Jumps to label if $A != 0
+jae (lbl) - Jumps to label if $A >= 0
+jue (lbl) - Jumps to label if $A <= 0
+ja  (lbl) - Jumps to label if $A > 0
+ju  (lbl) - Jumps to label if $A < 0
+
+-- BITWISE --
+band (r1, r2) | (d, r) | (r, d) | (d, d) - Performs bitwise AND (&) operation and stores result in $A.
+bor (r1, r2) | (d, r) | (r, d) | (d, d) - Performs bitwise OR (|) operation and stores result in $A.
+bsl (r) | (d) - Performs bitshift left (<<) operation and stores result in $A.
+bsr (r) | (d) - Performs bitshift right (>>) operation and stores result in $A.

@@ -24,6 +24,7 @@ const static std::string INSTRUCTION_IDS[] =
    "syscall",
    "add",
    "sub",
+   "mul",
    "div",
    "mod",
    "copy",
@@ -49,8 +50,6 @@ const static std::string INSTRUCTION_IDS[] =
 };
 
 const static size_t INSTRUCTION_SIZE = sizeof(INSTRUCTION_IDS) / sizeof(INSTRUCTION_IDS[0]);
-
-static std::vector<std::string> INS_SET;
 
 std::vector<int> getArgTypeList(std::vector<std::string>);
 
