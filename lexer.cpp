@@ -35,7 +35,7 @@ std::vector<std::string> lexline(std::string line, const size_t l = 1) {
    }
 
    //std::cout << toProcess << std::endl;
-   std::replace(toProcess.begin(), toProcess.end(), ',', ' ');
+   std::replace(toProcess.begin(), toProcess.end(), arg_delimiter, ' ');
 
    std::stringstream strm(toProcess);
    std::string token;

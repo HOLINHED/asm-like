@@ -36,14 +36,31 @@ int main() {
       "FLG_2",
    };
 
+   const std::string ARG_TYPES[] = 
+   {
+      "STR",
+      "NUM",
+      "DAT",
+      "REG",
+      "VAR",
+      "LBL"
+   };
+
+   const size_t ARG_LSIZE = 6;
+
    const static size_t INSTRUCTION_SIZE = sizeof(INSTRUCTION_IDS) / sizeof(INSTRUCTION_IDS[0]);
 
    std::stringstream strm;
    strm << "#ifndef DK9H_INS\n";
    strm << "#define DK9H_INS\n";
 
-   for (size_t i = 0; i < INSTRUCTION_SIZE; i++) {
-      strm << "#define h_" << INSTRUCTION_IDS[i] << " " << i << "\n";
+   size_t i = 0;
+   for (; i < INSTRUCTION_SIZE; i++) {
+      strm << "#define i_" << INSTRUCTION_IDS[i] << " " << i << "\n";
+   }
+
+   for (size_t j = 0; j < ARG_LSIZE; j++) {
+      strm << "#define v_" << ARG_TYPES[j] << " " << (10 * i + j) << "\n";
    }
 
    strm << "#endif";
