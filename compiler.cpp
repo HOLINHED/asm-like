@@ -54,18 +54,6 @@ int main(int argc, char** argv) {
    file.close();
 
    auto lexresult = lex(buffer);
-
-   // Lexer result test
-   std::cout << "LEXER RESULT:\n";
-   for (auto y : lexresult) {
-      std::cout << "[ ";
-      for (std::string x : y) {
-         std::cout << x << ", ";
-      }
-      std::cout << "]\n";
-   }
-
-   std::cout << "PARSER RESULT:\n";
    
    auto parseresult = parse(lexresult);
 
@@ -74,7 +62,51 @@ int main(int argc, char** argv) {
    }
 
    if (dump) {
-      std::cout << "This feature has not been implemented yet.\n";
+      std::stringstream finaldout;
+
+      finaldout << "======= LEXER RESULT =======\n";
+      for (auto y : lexresult) {
+         finaldout << "[ ";
+         for (std::string x : y) {
+            finaldout << x << ", ";
+         }
+         finaldout << "]\n";
+      }
+
+      finaldout << "\n ======= PARSER RESULT =======\n";
+
+      for (auto toPush : parseresult) {
+         finaldout << "------------------------\n"
+            << "Type: " << toPush.type << "\n"
+            << "size: " << toPush.size << "\n"
+            << "uid: " << toPush.uid << "\n"
+            << "jmp_index: " << toPush.jmp_index << "\n"
+            << "args: [";
+
+         for (std::string piss : toPush.args) {
+            finaldout << piss << ", ";
+         }
+         finaldout << "]\narg_types: [";
+
+         for (int a : toPush.arg_types) {
+            finaldout << a << ", ";
+         }
+         finaldout << "]\n";
+      }
+
+      finaldout << "------------------------\n";
+
+      std::ofstream dumpFile;
+
+      dumpFile.open("FINAL_DUMP.txt");
+
+      if (!dumpFile) {
+         std::cerr << "ERROR GENERATING DUMP FILE\n";
+         exit(1);
+      }
+
+      dumpFile << finaldout.str();
+      dumpFile.close();
    }
 
    delete buffer;

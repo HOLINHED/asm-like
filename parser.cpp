@@ -128,8 +128,12 @@ std::vector<Instruction> parse(std::vector<std::vector<std::string>> adt) {
    std::vector<Instruction> result;
    std::vector<size_t> toLink;
 
-   size_t ln = 1;
+   size_t ln = 0;
    for (std::vector<std::string> line : adt) {
+      ln += 1;
+
+      if (line.size() == 0) continue;
+
       const int ins = getInsType(line[0]);
 
       if (ins == -1) {
@@ -169,31 +173,17 @@ std::vector<Instruction> parse(std::vector<std::vector<std::string>> adt) {
       }
 
       result.push_back(toPush);
-
-      //PRINT INSTRUCTION 
-      std::cout << "------------------------\n"
-                << "Type: " << toPush.type << "\n"
-                << "size: " << toPush.size << "\n"
-                << "uid: " << toPush.uid << "\n"
-                << "jmp_index: " << toPush.jmp_index << "\n"
-                << "args: [";
-
-      for (std::string piss : toPush.args) {
-         std::cout << piss << ", ";
-      }
-      std::cout << "]\narg_types: [";
-
-      for (int shit : toPush.arg_types) {
-         std::cout << shit << ", ";
-      }
-      std::cout << "]\n";
-
-      ln++;
    }
 
    for (size_t i : toLink) {
-      std::cout << "TO LINK:::::\n";
-      std::cout << result[i].args[0] << std::endl;
+      //std::cout << "TO LINK:::::\n";
+     if (labelList.find(result[i].args[0]) == labelList.end()) {
+        std::cerr << "[Parse Error] Label \"" << result[i].args[0] << "\" undefined. On line " << (i + 1) << std::endl;;
+        exit(1); 
+     } else {
+        result[i].jmp_index = labelList[result[i].args[0]];
+        //std::cout << "Successfully linked label \"" << result[i].args[0] << "\" to index " << labelList[result[i].args[0]] << std::endl;
+     }
    }
 
    return result;
