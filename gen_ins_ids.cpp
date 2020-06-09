@@ -3,39 +3,9 @@
 #include <string>
 #include <fstream>
 
+#include "ins_map.h"
+
 int main() {
-   const static std::string INSTRUCTION_IDS[] = 
-   {
-      "li",
-      "la",
-      "mov",
-      "syscall",
-      "add",
-      "sub",
-      "mul",
-      "div",
-      "mod",
-      "copy",
-      "cmp", 
-      "jeq",
-      "jne",
-      "jae",
-      "jue",
-      "ja",
-      "ju",
-      "jmp",
-      "mmov",
-      "mret",
-      "mcpy",
-      "band",
-      "bor",
-      "bsl",
-      "bsr",
-      "LBL",
-      "VAR",
-      "FLG_1",
-      "FLG_2",
-   };
 
    const std::string ARG_TYPES[] = 
    {
@@ -44,10 +14,11 @@ int main() {
       "DAT",
       "REG",
       "VAR",
-      "LBL"
+      "LBL",
+      "MEM",
    };
 
-   const size_t ARG_LSIZE = 6;
+   const size_t ARG_LSIZE = 7;
 
    const static size_t INSTRUCTION_SIZE = sizeof(INSTRUCTION_IDS) / sizeof(INSTRUCTION_IDS[0]);
 

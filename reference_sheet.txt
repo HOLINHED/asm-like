@@ -13,6 +13,8 @@ jmp (lbl) - Jumps to label (unconditional).
 mmov (r, m) | (d, m) - Moves data to memory.
 mret (m) - Retreives data from memory into $A.
 mcpy (m1, m2) - Copies memory from m1 to m2.
+mdel (m) - Deletes memory from stack.
+return - Terminates program.
 
 -- MATH --
 add (r1, r2) | (d, r) | (r, d) | (d, d) - Performs addition on two data. Stores result in $A.

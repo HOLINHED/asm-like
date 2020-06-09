@@ -24,6 +24,7 @@ std::vector<int> getArgTypeList(std::vector<std::string> args) {
             case '"': argid = v_STR; break;
             case '$': argid = v_REG; break;
             case '#': argid = v_VAR; break;
+            case '*': argid = v_MEM; break;
          }
          argtypes.push_back(argid);
    }
@@ -87,9 +88,45 @@ void parseLabel(std::vector<std::string> line, Instruction& result, size_t ln = 
    labelList[result.uid] = ln - 1;
 }
 
+void parseJmpGeneral(std::vector<std::string> line, Instruction& result, std::vector<size_t>& toLink, size_t ln = 1) {
+   
+   line.erase(line.begin());
+
+   if (line.size() != 1) {
+      std::cerr << "[Parse Error] Jump instruction expected a label name. On line " << ln << std::endl;
+      exit(1);
+   }
+
+   result.args = line;
+   result.arg_types.push_back(v_LBL);
+   
+   if (labelList.find(result.args[0]) == labelList.end()) {
+      result.jmp_index = 0;
+      toLink.push_back(ln - 1);
+   } else {
+      result.jmp_index = labelList[result.args[0]];
+   }
+}
+
+void parseGeneric(std::vector<std::string> line, Instruction& result, size_t ln = 1) {
+
+   const std::string iname(line[0]);
+
+   line.erase(line.begin());
+
+   if (line.size() == 0) {
+      std::cout << "Instruction " << iname << " expected at least 1 argument. On line " << ln << std::endl;
+      exit(1);
+   }
+
+   result.args = line;
+   result.arg_types = getArgTypeList(result.args);
+}
+
 std::vector<Instruction> parse(std::vector<std::vector<std::string>> adt) {
 
    std::vector<Instruction> result;
+   std::vector<size_t> toLink;
 
    size_t ln = 1;
    for (std::vector<std::string> line : adt) {
@@ -104,9 +141,32 @@ std::vector<Instruction> parse(std::vector<std::vector<std::string>> adt) {
 
       toPush.type = ins;
 
-      if (ins == i_VAR) parseVar(line, toPush, ln);
-      if (ins == i_LBL) parseLabel(line, toPush, ln);
-      //std::cout << "FOUND INSTRUCTION " << ins << std::endl;
+      bool ccomp = false;
+
+      if (ins == i_VAR) {
+         parseVar(line, toPush, ln);
+         ccomp = true;
+      }
+      if (ins == i_LBL) { 
+         parseLabel(line, toPush, ln);
+         ccomp = true;
+      }
+      // jumps
+      if (ins >= i_jeq && ins <= i_jmp) {
+         parseJmpGeneral(line, toPush, toLink, ln);
+         ccomp = true;
+      }
+
+      if (!ccomp) {
+         if (!(ins == i_return || ins == i_syscall || ins == i_FLG_1 || ins == i_FLG_2)) {
+            parseGeneric(line, toPush, ln);
+         } else {
+            if (line.size() != 1) {
+               std::cout << "[Parse Error] Instruction " << line[0] << " expected no arguments. On line " << ln << std::endl;
+               exit(1);
+            }
+         }
+      }
 
       result.push_back(toPush);
 
@@ -129,6 +189,11 @@ std::vector<Instruction> parse(std::vector<std::vector<std::string>> adt) {
       std::cout << "]\n";
 
       ln++;
+   }
+
+   for (size_t i : toLink) {
+      std::cout << "TO LINK:::::\n";
+      std::cout << result[i].args[0] << std::endl;
    }
 
    return result;
