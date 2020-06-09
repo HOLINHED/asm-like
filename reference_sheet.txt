@@ -1,6 +1,6 @@
 r = register
 d = data
-m = memory
+m = memory (Special Symbols: top, front, itop)
 lbl = label
 
 -- CORE --

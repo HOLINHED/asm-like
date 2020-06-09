@@ -16,9 +16,10 @@ int main() {
       "VAR",
       "LBL",
       "MEM",
+      "MEMPTR"
    };
 
-   const size_t ARG_LSIZE = 7;
+   const size_t ARG_LSIZE = 8;
 
    const static size_t INSTRUCTION_SIZE = sizeof(INSTRUCTION_IDS) / sizeof(INSTRUCTION_IDS[0]);
 

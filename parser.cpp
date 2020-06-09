@@ -6,8 +6,16 @@
 #define INS_SIZE INSTRUCTION_SIZE
 
 bool isNum(std::string str) {
+   bool com = false;
    for (char c : str) {
-      if (!std::isdigit(c)) return false;
+      if (c == '.') {
+         if (com) return false;
+         com = true;
+         continue;
+      }
+      if (!std::isdigit(c)) {
+         return false;
+      }
    }
    return true;
 }
@@ -15,6 +23,10 @@ bool isNum(std::string str) {
 std::vector<int> getArgTypeList(std::vector<std::string> args) {
    std::vector<int> argtypes;
       for (std::string arg : args) {
+         if (arg.substr(0, 2) == "*$") {
+            argtypes.push_back(v_MEMPTR);
+            continue;
+         }
          if (isNum(arg)) {
             argtypes.push_back(v_NUM);
             continue;
@@ -131,6 +143,8 @@ std::vector<Instruction> parse(std::vector<std::vector<std::string>> adt) {
    size_t ln = 0;
    for (std::vector<std::string> line : adt) {
       ln += 1;
+
+      if (line.size() == 1 && line[0].empty()) continue;
 
       if (line.size() == 0) continue;
 

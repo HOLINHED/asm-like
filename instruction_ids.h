@@ -38,4 +38,5 @@
 #define v_VAR 314
 #define v_LBL 315
 #define v_MEM 316
+#define v_MEMPTR 317
 #endif

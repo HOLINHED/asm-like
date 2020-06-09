@@ -65,11 +65,11 @@ std::vector<std::vector<std::string>> lex(std::stringstream *content) {
     while (std::getline(*content, line))  {
       line = std::regex_replace(line, std::regex(";[]*?.*"), "$1"); // ignore comments
       line = trim(line); // ignore whitespace
-      if (!line.empty()) {
+      //if (!line.empty()) {
          //std::cout << line << std::endl;
          auto res = lexline(line, ln);
          result.push_back(res);
-      }
+      //}
       ln++;
     }
 
