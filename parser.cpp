@@ -7,29 +7,38 @@
 
 bool isNum(std::string str) {
    bool com = false;
-   for (char c : str) {
-      if (c == '.') {
+   if (str == "-") return false;
+   for (size_t i = str[0] == '-' ? 1 : 0; i < str.size(); i++) {
+      if (str[i] == '.') {
          if (com) return false;
          com = true;
          continue;
       }
-      if (!std::isdigit(c)) {
+      if (!std::isdigit(str[i])) {
          return false;
       }
    }
    return true;
 }
 
-std::vector<int> getArgTypeList(std::vector<std::string> args) {
+std::vector<int> getArgTypeList(std::vector<std::string> args, size_t ln = 1) {
    std::vector<int> argtypes;
       for (std::string arg : args) {
          if (arg.substr(0, 2) == "*$") {
+            if (arg.size() < 3) {
+               std::cerr << "[Parse Error] Invalid symbol on line " << ln << std::endl;
+               exit(1);
+            }
             argtypes.push_back(v_MEMPTR);
             continue;
          }
          if (isNum(arg)) {
             argtypes.push_back(v_NUM);
             continue;
+         }
+         if (arg.size() < 2) {
+            std::cerr << "[Parse Error] Invalid symbol on line " << ln << std::endl;
+            exit(1);
          }
          int argid = v_DAT;
          switch(arg[0]) {
@@ -80,7 +89,7 @@ void parseVar(std::vector<std::string> line, Instruction& result, size_t ln = 1)
 
    result.args = line;
 
-   result.arg_types = getArgTypeList(result.args);
+   result.arg_types = getArgTypeList(result.args, ln);
 }
 
 void parseLabel(std::vector<std::string> line, Instruction& result, size_t ln = 1) {
@@ -132,7 +141,7 @@ void parseGeneric(std::vector<std::string> line, Instruction& result, size_t ln 
    }
 
    result.args = line;
-   result.arg_types = getArgTypeList(result.args);
+   result.arg_types = getArgTypeList(result.args, ln);
 }
 
 std::vector<Instruction> parse(std::vector<std::vector<std::string>> adt) {

@@ -2,6 +2,8 @@
 #include "instruction_ids.h"
 #include "executor.h"
 
+std::vector<double> memory;
+
 int exec(std::vector<Instruction> inslist) {
 
    return 0;
