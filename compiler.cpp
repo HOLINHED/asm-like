@@ -107,6 +107,8 @@ int main(int argc, char** argv) {
 
       dumpFile << finaldout.str();
       dumpFile.close();
+
+      std::cout << "==> Dump File Created Successfully!\n";
    }
 
    delete buffer;

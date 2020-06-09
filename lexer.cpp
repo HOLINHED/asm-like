@@ -1,6 +1,5 @@
-#include "lexer.h"
-
 #include <iostream>
+#include "lexer.h"
 
 const char delimiter = ' ';
 const char arg_delimiter = ',';
