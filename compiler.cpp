@@ -57,8 +57,11 @@ int main(int argc, char** argv) {
    
    auto parseresult = parse(lexresult);
 
-   if (run) {
-      std::cout << "This feature has not been implemented yet.\n";
+   if (true || run) {
+      int rcode = exec(parseresult);
+      std::cout << "Exited with code " << rcode << std::endl;
+   } else {
+
    }
 
    if (dump) {

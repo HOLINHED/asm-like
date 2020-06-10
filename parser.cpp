@@ -68,8 +68,6 @@ int getInsType(std::string str) {
    return -1;
 }
 
-std::map<std::string, size_t> labelList;
-
 void parseVar(std::vector<std::string> line, Instruction& result, size_t ln = 1) {
    if (line.size() != 2) {
       std::cerr << "[Parse Error] variable name expected 1 argument. On line " << ln << std::endl;
@@ -92,6 +90,8 @@ void parseVar(std::vector<std::string> line, Instruction& result, size_t ln = 1)
    result.arg_types = getArgTypeList(result.args, ln);
 }
 
+std::map<std::string, size_t> labelList;
+
 void parseLabel(std::vector<std::string> line, Instruction& result, size_t ln = 1) {
    
    if (line.size() != 1) {
@@ -105,6 +105,11 @@ void parseLabel(std::vector<std::string> line, Instruction& result, size_t ln = 
    }
 
    result.uid = line[0].substr(1);
+
+   if (labelList.find(result.uid) != labelList.end()) {
+      std::cerr << "[Parse Error] Label \"" << result.uid << "\" has alredy been declared. On line " << ln << std::endl;
+      exit(1);
+   }
 
    labelList[result.uid] = ln - 1;
 }

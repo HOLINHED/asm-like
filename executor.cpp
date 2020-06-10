@@ -16,7 +16,7 @@ void jump(int opCode) {
 
 }
 
-void bShift(int opCode) {
+void bitwise(int opCode) {
 
 }
 
@@ -25,7 +25,28 @@ int exec(std::vector<Instruction> inslist) {
 
    for (size_t i = 0; i < inslist.size(); i++) {
 
-      
+      const int ins = inslist[i].type;
+
+      if (ins == i_FLG_1 || ins == i_FLG_2) {
+         runFlag = (i_FLG_2 - ins);
+         //std::cout << "Type: " << inslist[i].type << "   FlagCode: " << runFlag << std::endl;
+         continue;
+      }
+
+      // data
+      if (runFlag == 1) {
+         if (ins != i_VAR) {
+            std::cerr << "[Runtime Error] Invalid instructions present during .data flag.\n";
+            return 1;
+         }
+      }  
+
+      //main
+      if (runFlag == 0) {
+         std::cout << "RUNTIME WOOOOO\n";
+      }
+
+
 
    }
 
