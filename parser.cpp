@@ -74,6 +74,11 @@ void parseVar(std::vector<std::string> line, Instruction& result, size_t ln = 1)
       exit(1);
    }
 
+   if (line[0].find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_:") != std::string::npos) {
+      std::cerr << "[Parse Error] Variable name contains invalid characters. On line " << ln << std::endl;
+      exit(1);
+   }
+
    result.size = line[1].size();
 
    if (line[0] == ":") {

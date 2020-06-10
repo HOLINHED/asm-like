@@ -18,12 +18,14 @@ int main(int argc, char** argv) {
                 << "-help (-h) Displays help for program.\n"
                 << "-dump (-d) Dumps values of each register into a file.\n"
                 << "-run (-r) Executes the program after compiling.\n"
+                << "-nostrict (-s) Turns off strict mode during runtime.\n"
                 ;
       exit(0);   
    }
 
    bool dump = false;
    bool run = false;
+   bool strict = true;
 
    if (argc >= 3) {
       for (int i = 2; i < argc; i++) {
@@ -31,10 +33,12 @@ int main(int argc, char** argv) {
 
          if (arg == "-dump" || arg == "-d") {
             dump = true;
-         } 
-         else if (arg == "-run" || arg == "-r") {
+         } else if (arg == "-run" || arg == "-r") {
             run = true;
-         } else {
+         } else if (arg == "-nostrict" || arg == "-s") {
+            strict = false;
+         }
+         else {
             std::cerr << "Unrecognized argument \"" << arg << "\"\n";
             exit(1);
          }
@@ -58,7 +62,7 @@ int main(int argc, char** argv) {
    auto parseresult = parse(lexresult);
 
    if (true || run) {
-      int rcode = exec(parseresult);
+      int rcode = exec(parseresult, strict);
       std::cout << "Exited with code " << rcode << std::endl;
    } else {
 

@@ -4,6 +4,6 @@
 #include <vector>
 #include "inst_obj.h"
 
-int exec(std::vector<Instruction>);
+int exec(std::vector<Instruction>, bool);
 
 #endif
