@@ -12,7 +12,6 @@
 #define INVALID_ARGS 4       // invalid arguments for instruction
 #define REG_DNE 5            // register does not exist.
 
-
 // TEMP
 std::string parseStr(const std::string& s) {
     std::stringstream ss{""};
@@ -72,6 +71,22 @@ int bitwise(const Instruction& ins) {
 }
 
 int memmanip(const Instruction& ins) {
+   return 0;
+}
+
+int mov(const Instruction& ins) {
+   return 0;
+}
+
+int rcopy(const Instruction& ins) {
+   return 0;
+}
+
+int compare(const Instruction& ins) {
+   return 0;
+}
+
+int syscll() {
    return 0;
 }
 
