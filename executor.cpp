@@ -5,16 +5,13 @@
 #include "instruction_ids.h"
 #include "executor.h"
 
-/*
-   return number meanings
+// Error Codes 
+#define INVALID_INS_DAT 1    // invalid instructions in .data
+#define VAR_IN_MAIN 2        // variable decleared during .main
+#define ILLEGAL_INS 3        // illegal instructions (outside .main or .data) 
+#define INVALID_ARGS 4       // invalid arguments for instruction
+#define REG_DNE 5            // register does not exist.
 
-   0 - ok
-   1 - invalid instructions in .data
-   2 - variable decleared during .main
-   3 - illegal instructions (outisde .main or .data)
-   4 - invalid arguments for an instruction
-   5 - register does not exist.
-*/
 
 // TEMP
 std::string parseStr(const std::string& s) {
@@ -80,7 +77,7 @@ int memmanip(const Instruction& ins) {
 
 int var(const Instruction& ins) {
    if (ins.args.size() != 1) {
-      return 1;
+      return INVALID_INS_DAT;
    }
 
    VarCont toinsert;
@@ -114,12 +111,12 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
          if (ins == i_VAR) {
             if (var(inslist[i]) == 1) {
                std::cerr << "[Runtime Error] Variable assignment requires 1 argument.\n";
-               return 4;
+               return INVALID_ARGS;
             }
          }
          if (ins != i_VAR) {
             std::cerr << "[Runtime Error] Invalid instructions present during .data flag.\n";
-            return 1;
+            return INVALID_INS_DAT;
          }
          continue;
       }  
@@ -131,17 +128,17 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
          if (ins == i_VAR) {
             if (strict) {
                std::cerr << "[Runtime Error] Variable declaration during .main flag illegal in strict mode.\n";
-               return 2;
+               return VAR_IN_MAIN;
             }
             if (var(inslist[i]) == 1) {
                std::cerr << "[Runtime Error] Variable assignment requires 1 argument.\n";
-               return 4;
+               return INVALID_ARGS;
             }
          }
          if (ins == i_li) {
             if (inslist[i].args.size() != 1 || inslist[i].arg_types[0] != v_NUM) {
                std::cerr << "[Runtime Error] Instruction li expects 1 argument of type 'NUM'.\n";  
-               return 4;
+               return INVALID_ARGS;
             }
 
             flag = std::stoi(inslist[i].args[0]);
@@ -149,14 +146,14 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
          if (ins == i_la) {
             if (inslist[i].args.size() != 1 || inslist[i].arg_types[0] != v_REG) {
                std::cerr << "[Runtime Error] Instruction la expects 1 argument of type 'REG'.\n";  
-               return 4;
+               return INVALID_ARGS;
             }
 
             const int rnum = getRegId(inslist[i].args[0]);
 
             if (rnum == -3) {
                std::cerr << "[Runtime Error] Register \"" << inslist[i].args[0] << "\" does not exist.\n";
-               return 5;
+               return REG_DNE;
             }
 
             pointer = rnum;
@@ -168,7 +165,7 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
       // invalid, instructions outside of either flag.
       if (runFlag < 0) {
          std::cerr << "[Runtime Error] Instructions present outside of .data and/or .main.\n";
-         return 3;
+         return ILLEGAL_INS;
       }
       // end for loop
    }
