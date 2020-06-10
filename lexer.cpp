@@ -60,18 +60,18 @@ std::vector<std::string> lexline(std::string line, const size_t l = 1) {
 std::vector<std::vector<std::string>> lex(std::stringstream *content) {
    std::vector<std::vector<std::string>> result;
 
-    std::string line;
-    size_t ln = 1;
-    while (std::getline(*content, line))  {
+   std::string line;
+   size_t ln = 1;
+   while (std::getline(*content, line))  {
       line = std::regex_replace(line, std::regex(";[]*?.*"), "$1"); // ignore comments
       line = trim(line); // ignore whitespace
-      //if (!line.empty()) {
+      if (!line.empty()) {
          //std::cout << line << std::endl;
          auto res = lexline(line, ln);
          result.push_back(res);
-      //}
+      }
       ln++;
-    }
+   }
 
    return result;
 }

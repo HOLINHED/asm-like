@@ -2,7 +2,7 @@
 #define H_DK9EXEC
 
 #include <vector>
-#include "parser.h"
+#include "inst_obj.h"
 
 int exec(std::vector<Instruction>);
 

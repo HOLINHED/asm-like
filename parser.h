@@ -3,17 +3,9 @@
 
 #include <vector>
 
+#include "inst_obj.h"
 #include "ins_map.h"
 #include "instruction_ids.h"
-
-struct Instruction {
-   int type{-1};
-   size_t size{0};
-   std::string uid;
-   size_t jmp_index{0};
-   std::vector<std::string> args;
-   std::vector<int> arg_types;
-};
 
 const static size_t INSTRUCTION_SIZE = sizeof(INSTRUCTION_IDS) / sizeof(INSTRUCTION_IDS[0]);
 

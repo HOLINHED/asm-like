@@ -3,8 +3,31 @@
 #include "executor.h"
 
 std::vector<double> memory;
+double registers[10]{0};
+unsigned int pointer = 0;
+unsigned int flag = 0;
+int runFlag = 0;
+
+void math(int opCode) {
+
+}
+
+void jump(int opCode) {
+
+}
+
+void bShift(int opCode) {
+
+}
+
 
 int exec(std::vector<Instruction> inslist) {
+
+   for (size_t i = 0; i < inslist.size(); i++) {
+
+      
+
+   }
 
    return 0;
 }
