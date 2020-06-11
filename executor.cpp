@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <map>
-#include <any>
+#include <fstream>
 #include "instruction_ids.h"
 #include "executor.h"
 
@@ -12,6 +12,15 @@
 #define INVALID_ARGS 4       // invalid arguments for instruction
 #define REG_DNE 5            // register does not exist.
 #define REDEC_ERR 6          // variable already declared
+
+std::map<std::string, VarCont> vars;
+
+std::vector<MemoryUnit> memory;
+long registers[10]{0};
+double registers_f[5]{0};
+int pointer = 0;
+unsigned int flag = 0;
+int runFlag = -1;
 
 // TEMP
 std::string parseStr(const std::string& s) {
@@ -33,36 +42,22 @@ std::string parseStr(const std::string& s) {
 }
 // TEMP
 
-struct VarCont {
-   std::string value;
-   int type;
-};
-
-struct MemoryUnit {
-   void* value;
-   int type;
-};
-
 int getRegId(std::string reg) {
-   if (reg == "$A") return -2;
-   if (reg == "$B") return -1;
+   if (reg == "$A") return REG_PTR;
+   if (reg == "$B") return REG_FLG;
 
-   const int rnum = std::stoi(reg.substr(1));
+   bool freg = false;
+   if (reg[1] == 'f') freg = true; 
 
-   if (rnum < 0 || rnum > 9) {
-      return -3; //-3 means register number is invalid
+   const int rnum = std::stoi(reg.substr(!freg ? 1 : 2));
+
+   if (rnum < 0 || rnum > (freg ? 4 : 9)) {
+      return REG_ERR; 
    }
 
-   return rnum;
+   // negetive register means it's a floating point. (id * -1) - 1 to convert to index
+   return (rnum * (freg ? -1 : 1)) - freg; 
 }
-
-std::map<std::string, VarCont> vars;
-
-std::vector<MemoryUnit> memory;
-double registers[10]{0};
-int pointer = 0;
-unsigned int flag = 0;
-int runFlag = -1;
 
 int math(const Instruction& ins) {
    return 0;
@@ -84,9 +79,8 @@ int mov(const Instruction& ins) {
    return 0;
 }
 
-int rcopy(const Instruction& ins) {
-   return 0;
-}
+//IMPLEMENT rcopy() function
+#include "execFunc/rcopy.cpp"
 
 int compare(const Instruction& ins) {
    return 0;
@@ -106,8 +100,8 @@ int var(const Instruction& ins) {
       vars[ins.uid].type = ins.arg_types[0];
 
       //std::cout << "REDEC VAR\n";
-      std::cout << vars[ins.uid].value << std::endl;
-      std::cout << vars[ins.uid].type << std::endl;
+      //std::cout << vars[ins.uid].value << std::endl;
+      //std::cout << vars[ins.uid].type << std::endl;
       return 0;
    }
 
@@ -124,7 +118,56 @@ int var(const Instruction& ins) {
    return 0;
 }
 
+void saveDebugLog() {
+   std::stringstream outstr;
+
+   outstr << "- [General] ---------------------\n"
+          << "RUNFLAG - " << runFlag << std::endl
+          << "$A - " << pointer << std::endl;
+   if (pointer >= 0) {
+      outstr << "r[$A] = " << registers[pointer] << std::endl;
+   } else if (pointer == REG_PTR) {
+      outstr << "r[$A] = " << pointer << std::endl;
+   } else if (pointer == REG_FLG) {
+      outstr << "r[$A] = " << flag << std::endl;
+   } else if (pointer < 0) {
+      outstr << "r[$A] = " << registers_f[(pointer * -1) - 1] << std::endl;
+   }
+   outstr << "$B - " << flag << std::endl;
+
+   outstr << "- [Variables] -------------------\n";
+   for (const auto &pair : vars) {
+     outstr << pair.first << ": " << vars[pair.first].value << " [" << vars[pair.first].type << "]\n"; 
+   }
+
+   outstr << "- [INT Registers] ---------------\n";
+   for (size_t i = 0; i < 10; i++) {
+      outstr << "r[$" << i << "] = " << registers[i] << std::endl;
+   }
+   outstr << "- [FLOAT Registers] -------------\n";
+   for (size_t i = 0; i < 5; i++) {
+      outstr << "f[$" << i << "] = " << registers_f[i] << std::endl;
+   }
+
+   std::ofstream coutfile;
+
+   coutfile.open("EXEC_FINAL_DUMP.txt");
+
+   if (!coutfile) {
+      std::cerr << "problem creating exec final dump file.\n";
+      exit(1);
+   }
+
+   coutfile << outstr.str();
+   coutfile.close();
+}
+
 int exec(std::vector<Instruction> inslist, bool strict = true) {
+
+   registers[0] = 10;
+   registers[1] = 20;
+   registers_f[0] = 5.6;
+   registers_f[1] = 10.7;
 
    for (size_t i = 0; i < inslist.size(); i++) {
       //std::cout << "FLAG: " << flag << std::endl;
@@ -184,13 +227,25 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
             }
 
             const int rnum = getRegId(inslist[i].args[0]);
+            //std::cout << "SETTING REG TO: " << rnum << std::endl;
 
-            if (rnum == -3) {
+            if (rnum == REG_ERR) {
                std::cerr << "[Runtime Error] Register \"" << inslist[i].args[0] << "\" does not exist.\n";
                return REG_DNE;
             }
 
             pointer = rnum;
+         }
+         if (ins == i_copy) {
+            const int r = rcopy(inslist[i]);
+            if (r == 1) {
+               std::cout << "[Runtime Error] Copy requires 2 arguments of type 'REG'.\n";
+               return INVALID_ARGS;
+            }
+            if (r == REG_DNE) {
+               std::cout << "[Runtime Error] Invalid registers in copy instruction.\n";
+               return REG_DNE;
+            }
          }
 
          continue;//end .main flag loop
@@ -204,6 +259,11 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
       // end for loop
    }
 
+   //std::cout << "r[0] = " << registers[0] << std::endl;
+   //std::cout << "r[1] = " << registers[1] << std::endl;
+   //std::cout << "rf[0] = " << registers_f[0] << std::endl;
+   //std::cout << "rf[1] = " << registers_f[1] << std::endl;
+   //84729471239471294712894719284701239471890
    return 0;
 }
 

@@ -4,7 +4,7 @@ m = memory (Special Symbols: top, front, itop)
 lbl = label
 
 Registers $0-$9 can hold 64 bit values.
-Registers $0f-$4f can hold 64 bit floating point values.
+Registers $f0-$f4 can hold 64 bit floating point values.
 
 -- CORE --
 li (int) - Loads an instruction into the flag ($B)
