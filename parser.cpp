@@ -32,7 +32,7 @@ std::string parseChr(const std::string& s) {
          case '"': return "\""; break;
          case 't': return "\t"; break;
          case '\\': return "\\"; break;
-         default: return "err";
+         default: return "\0";
       }   
    }
    return s.substr(1,1);
@@ -200,14 +200,20 @@ void parseGeneric(std::vector<std::string> line, Instruction& result, size_t ln 
    line.erase(line.begin());
 
    if (line.size() == 0) {
-      std::cout << "Instruction " << iname << " expected at least 1 argument. On line " << ln << std::endl;
+      std::cerr << "[Parse Error] Instruction " << iname << " expected at least 1 argument. On line " << ln << std::endl;
       exit(1);
    }
 
    result.arg_types = getArgTypeList(line, ln);
-
+   //.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") != std::string::npos
    std::vector<std::string> arglist;
    for (size_t i = 0; i < line.size(); i++) {
+      if (result.arg_types[i] == v_DAT) {
+         if (line[i].find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") != std::string::npos) {
+            std::cerr << "[Parse Error] Argument contains illegal characters. On line " << ln << std::endl;
+            exit(1);
+         }
+      }
       if (result.arg_types[i] == v_STR) {
          std::string pstring = parseStr(line[i]);
          arglist.push_back(pstring);
