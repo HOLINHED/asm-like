@@ -1,9 +1,42 @@
 #include "parser.h"
 #include <iostream>
+#include <sstream>
 #include <map>
 
 #define INS_ARR INSTRUCTION_IDS
 #define INS_SIZE INSTRUCTION_SIZE
+
+std::string parseStr(const std::string& s) {
+    std::stringstream sout;
+
+    for(size_t i = 1; i < s.length() - 1; i++) {
+        if (s.at(i) == '\\') {
+            switch(s.at(i + 1)) {
+                case 'n': sout << "\n"; i++; break;
+                case '"': sout << "\""; i++; break;
+                case 't': sout << "\t"; i++; break;
+                default:  sout << "\\";      break;
+            }       
+        } else {
+            sout << s.at(i);
+        }
+    }
+
+    return sout.str();
+}
+
+std::string parseChr(const std::string& s) {
+   if (s.size() == 4) { //'\x'
+      switch(s[2]) {
+         case 'n': return "\n"; break;
+         case '"': return "\""; break;
+         case 't': return "\t"; break;
+         case '\\': return "\\"; break;
+         default: return "err";
+      }   
+   }
+   return s.substr(1,1);
+}
 
 // 0 - is not num,   1 - is num,   2 - is float
 int isNum(std::string str) {
@@ -32,6 +65,14 @@ std::vector<int> getArgTypeList(std::vector<std::string> args, size_t ln = 1) {
                exit(1);
             }
             argtypes.push_back(v_MEMPTR);
+            continue;
+         }
+         if (arg.size() == 3 && arg[0] == '\'' && arg[2] == '\'') {
+            argtypes.push_back(v_CHR);
+            continue;
+         }
+         if (arg.size() == 4 && arg[0] == '\'' && arg[1] == '\\' && arg[3] == '\'') {
+            argtypes.push_back(v_CHR);
             continue;
          }
          const int isnres = isNum(arg);
@@ -84,8 +125,6 @@ void parseVar(std::vector<std::string> line, Instruction& result, size_t ln = 1)
       exit(1);
    }
 
-   result.size = line[1].size();
-
    if (line[0] == ":") {
       std::cerr << "[Parse Error] Variable does not have a name. On line " << ln << std::endl;
       exit(1); 
@@ -95,9 +134,19 @@ void parseVar(std::vector<std::string> line, Instruction& result, size_t ln = 1)
 
    line.erase(line.begin());
 
-   result.args = line;
+   result.arg_types = getArgTypeList(line, ln);
 
-   result.arg_types = getArgTypeList(result.args, ln);
+   if (result.arg_types[0] == v_STR) {
+      line[0] = parseStr(line[0]);
+      result.args = line;
+   } else if (result.arg_types[0] == v_CHR) {
+      line[0] = parseChr(line[0]);
+      result.args = line;
+   } else {
+      result.args = line;
+   }
+
+   result.size = result.args[0].size();
 }
 
 std::map<std::string, size_t> labelList;
@@ -155,8 +204,24 @@ void parseGeneric(std::vector<std::string> line, Instruction& result, size_t ln 
       exit(1);
    }
 
-   result.args = line;
-   result.arg_types = getArgTypeList(result.args, ln);
+   result.arg_types = getArgTypeList(line, ln);
+
+   std::vector<std::string> arglist;
+   for (size_t i = 0; i < line.size(); i++) {
+      if (result.arg_types[i] == v_STR) {
+         std::string pstring = parseStr(line[i]);
+         arglist.push_back(pstring);
+         continue;
+      } 
+      if (result.arg_types[i] == v_CHR) {
+         std::string pstring = parseChr(line[i]);
+         arglist.push_back(pstring);
+         continue;
+      } 
+      arglist.push_back(line[i]);
+   }
+
+   result.args = arglist;
 }
 
 std::vector<Instruction> parse(std::vector<std::vector<std::string>> adt) {
@@ -214,13 +279,11 @@ std::vector<Instruction> parse(std::vector<std::vector<std::string>> adt) {
    }
 
    for (size_t i : toLink) {
-      //std::cout << "TO LINK:::::\n";
      if (labelList.find(result[i].args[0]) == labelList.end()) {
         std::cerr << "[Parse Error] Label \"" << result[i].args[0] << "\" undefined. On line " << (i + 1) << std::endl;;
         exit(1); 
      } else {
         result[i].jmp_index = labelList[result[i].args[0]];
-        //std::cout << "Successfully linked label \"" << result[i].args[0] << "\" to index " << labelList[result[i].args[0]] << std::endl;
      }
    }
 

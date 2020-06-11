@@ -18,6 +18,7 @@ int main() {
       "MEM",
       "MEMPTR",
       "NUM_F",
+      "CHR",
    };
 
    //const size_t ARG_LSIZE = 9;

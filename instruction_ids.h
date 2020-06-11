@@ -42,4 +42,5 @@
 #define v_MEM 336
 #define v_MEMPTR 337
 #define v_NUM_F 338
+#define v_CHR 339
 #endif

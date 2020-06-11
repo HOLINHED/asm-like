@@ -22,26 +22,6 @@ int pointer = 0;
 unsigned int flag = 0;
 int runFlag = -1;
 
-// TEMP
-std::string parseStr(const std::string& s) {
-    std::stringstream ss{""};
-
-    for(size_t i = 0; i < s.length(); i++) {
-        if (s.at(i) == '\\') {
-            switch(s.at(i + 1)) {
-                case 'n':  ss << "\n"; i++; break;
-                case '"':  ss << "\""; i++; break;
-                default:   ss << "\\";      break;
-            }       
-        } else {
-            ss << s.at(i);
-        }
-    }
-
-    return ss.str();
-}
-// TEMP
-
 int getRegId(std::string reg) {
    if (reg == "$A") return REG_PTR;
    if (reg == "$B") return REG_FLG;
