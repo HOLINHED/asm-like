@@ -98,10 +98,6 @@ int var(const Instruction& ins) {
    if (vars.find(ins.uid) != vars.end()) {
       vars[ins.uid].value = ins.args[0];
       vars[ins.uid].type = ins.arg_types[0];
-
-      //std::cout << "REDEC VAR\n";
-      //std::cout << vars[ins.uid].value << std::endl;
-      //std::cout << vars[ins.uid].type << std::endl;
       return 0;
    }
 
@@ -110,10 +106,6 @@ int var(const Instruction& ins) {
    toinsert.type = ins.arg_types[0];
 
    vars[ins.uid] = toinsert;
-
-   //std::cout << "-------\nname: " << ins.uid << std::endl;
-   //std::cout << "value: " << toinsert.value << std::endl;
-   //std::cout << "arg_type: " << toinsert.type << std::endl << "-------\n";
 
    return 0;
 }
@@ -170,13 +162,10 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
    registers_f[1] = 10.7;
 
    for (size_t i = 0; i < inslist.size(); i++) {
-      //std::cout << "FLAG: " << flag << std::endl;
-      //std::cout << "POINTER: " << pointer << std::endl;
       const int ins = inslist[i].type;
 
       if (ins == i_FLG_1 || ins == i_FLG_2) {
          runFlag = (i_FLG_2 - ins);
-         //std::cout << "Type: " << inslist[i].type << "   FlagCode: " << runFlag << std::endl;
          continue;
       }
 
@@ -227,7 +216,6 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
             }
 
             const int rnum = getRegId(inslist[i].args[0]);
-            //std::cout << "SETTING REG TO: " << rnum << std::endl;
 
             if (rnum == REG_ERR) {
                std::cerr << "[Runtime Error] Register \"" << inslist[i].args[0] << "\" does not exist.\n";
@@ -259,11 +247,6 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
       // end for loop
    }
 
-   //std::cout << "r[0] = " << registers[0] << std::endl;
-   //std::cout << "r[1] = " << registers[1] << std::endl;
-   //std::cout << "rf[0] = " << registers_f[0] << std::endl;
-   //std::cout << "rf[1] = " << registers_f[1] << std::endl;
-   //84729471239471294712894719284701239471890
    return 0;
 }
 
