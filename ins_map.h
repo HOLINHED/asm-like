@@ -29,6 +29,8 @@ const static std::string INSTRUCTION_IDS[] =
    "mcpy",
    "band",
    "bor",
+   "bxor",
+   "bnot",
    "bsl",
    "bsr",
    "return",

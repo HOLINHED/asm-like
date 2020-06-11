@@ -11,6 +11,7 @@
 #define ILLEGAL_INS 3        // illegal instructions (outside .main or .data) 
 #define INVALID_ARGS 4       // invalid arguments for instruction
 #define REG_DNE 5            // register does not exist.
+#define REDEC_ERR 6          // variable already declared
 
 // TEMP
 std::string parseStr(const std::string& s) {
@@ -37,6 +38,11 @@ struct VarCont {
    int type;
 };
 
+struct MemoryUnit {
+   void* value;
+   int type;
+};
+
 int getRegId(std::string reg) {
    if (reg == "$A") return -2;
    if (reg == "$B") return -1;
@@ -52,7 +58,7 @@ int getRegId(std::string reg) {
 
 std::map<std::string, VarCont> vars;
 
-std::vector<double> memory;
+std::vector<MemoryUnit> memory;
 double registers[10]{0};
 int pointer = 0;
 unsigned int flag = 0;
@@ -92,7 +98,17 @@ int syscll() {
 
 int var(const Instruction& ins) {
    if (ins.args.size() != 1) {
-      return INVALID_INS_DAT;
+      return INVALID_ARGS;
+   }
+
+   if (vars.find(ins.uid) != vars.end()) {
+      vars[ins.uid].value = ins.args[0];
+      vars[ins.uid].type = ins.arg_types[0];
+
+      //std::cout << "REDEC VAR\n";
+      std::cout << vars[ins.uid].value << std::endl;
+      std::cout << vars[ins.uid].type << std::endl;
+      return 0;
    }
 
    VarCont toinsert;
@@ -101,9 +117,9 @@ int var(const Instruction& ins) {
 
    vars[ins.uid] = toinsert;
 
-   std::cout << "name: " << ins.uid << std::endl;
-   std::cout << "value: " << toinsert.value << std::endl;
-   std::cout << "arg_type: " << toinsert.type << std::endl;
+   //std::cout << "-------\nname: " << ins.uid << std::endl;
+   //std::cout << "value: " << toinsert.value << std::endl;
+   //std::cout << "arg_type: " << toinsert.type << std::endl << "-------\n";
 
    return 0;
 }
@@ -145,9 +161,12 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
                std::cerr << "[Runtime Error] Variable declaration during .main flag illegal in strict mode.\n";
                return VAR_IN_MAIN;
             }
-            if (var(inslist[i]) == 1) {
-               std::cerr << "[Runtime Error] Variable assignment requires 1 argument.\n";
-               return INVALID_ARGS;
+            const int r = var(inslist[i]);
+            if (var(inslist[i]) != 0) {
+               if (r == INVALID_ARGS) {
+                  std::cerr << "[Runtime Error] Variable assignment requires 1 argument.\n";
+               }
+               return r;
             }
          }
          if (ins == i_li) {

@@ -5,20 +5,22 @@
 #define INS_ARR INSTRUCTION_IDS
 #define INS_SIZE INSTRUCTION_SIZE
 
-bool isNum(std::string str) {
+// 0 - is not num,   1 - is num,   2 - is float
+int isNum(std::string str) {
    bool com = false;
-   if (str == "-") return false;
+   if (str == "-") return 0;
    for (size_t i = str[0] == '-' ? 1 : 0; i < str.size(); i++) {
       if (str[i] == '.') {
-         if (com) return false;
+         if (com) return 0;
          com = true;
          continue;
       }
       if (!std::isdigit(str[i])) {
-         return false;
+         return 0;
       }
    }
-   return true;
+   if (com) return 2;
+   return 1;
 }
 
 std::vector<int> getArgTypeList(std::vector<std::string> args, size_t ln = 1) {
@@ -32,8 +34,11 @@ std::vector<int> getArgTypeList(std::vector<std::string> args, size_t ln = 1) {
             argtypes.push_back(v_MEMPTR);
             continue;
          }
-         if (isNum(arg)) {
-            argtypes.push_back(v_NUM);
+         const int isnres = isNum(arg);
+         if (isnres != 0) {
+            int toPush = v_NUM;
+            if (isnres == 2) toPush = v_NUM_F; 
+            argtypes.push_back(toPush);
             continue;
          }
          if (arg.size() < 2) {
@@ -74,7 +79,7 @@ void parseVar(std::vector<std::string> line, Instruction& result, size_t ln = 1)
       exit(1);
    }
 
-   if (line[0].find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_:") != std::string::npos) {
+   if (line[0].substr(0, line[0].size() - 1).find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_") != std::string::npos) {
       std::cerr << "[Parse Error] Variable name contains invalid characters. On line " << ln << std::endl;
       exit(1);
    }

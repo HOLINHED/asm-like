@@ -3,6 +3,9 @@ d = data
 m = memory (Special Symbols: top, front, itop)
 lbl = label
 
+Registers $0-$9 can hold 64 bit values.
+Registers $0f-$4f can hold 64 bit floating point values.
+
 -- CORE --
 li (int) - Loads an instruction into the flag ($B)
 la (r) - Sets pointer ($A) to a register.
@@ -35,5 +38,7 @@ ju  (lbl) - Jumps to label if $A < 0
 -- BITWISE --
 band (r1, r2) | (d, r) | (r, d) | (d, d) - Performs bitwise AND (&) operation and stores result in $A.
 bor (r1, r2) | (d, r) | (r, d) | (d, d) - Performs bitwise OR (|) operation and stores result in $A.
+bxor (r1, r2) | (d, r) | (r, d) | (d, d) - Performs bitwise XOR (^) operation and stores result in $A.
+bnot (r1, r2) | (d, r) | (r, d) | (d, d) - Performs bitwise NOT (!) operation and stores result in $A.
 bsl (r) | (d) - Performs bitshift left (<<) operation and stores result in $A.
 bsr (r) | (d) - Performs bitshift right (>>) operation and stores result in $A.

@@ -16,12 +16,14 @@ int main() {
       "VAR",
       "LBL",
       "MEM",
-      "MEMPTR"
+      "MEMPTR",
+      "NUM_F",
    };
 
-   const size_t ARG_LSIZE = 8;
+   //const size_t ARG_LSIZE = 9;
+   const size_t ARG_LSIZE = sizeof(ARG_TYPES) / sizeof(ARG_TYPES[0]);
 
-   const static size_t INSTRUCTION_SIZE = sizeof(INSTRUCTION_IDS) / sizeof(INSTRUCTION_IDS[0]);
+   const size_t INSTRUCTION_SIZE = sizeof(INSTRUCTION_IDS) / sizeof(INSTRUCTION_IDS[0]);
 
    std::stringstream strm;
    strm << "#ifndef DK9H_INS\n";
