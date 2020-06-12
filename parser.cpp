@@ -59,14 +59,6 @@ int isNum(std::string str) {
 std::vector<int> getArgTypeList(std::vector<std::string> args, size_t ln = 1) {
    std::vector<int> argtypes;
       for (std::string arg : args) {
-         if (arg.substr(0, 2) == "*$") {
-            if (arg.size() < 3) {
-               std::cerr << "[Parse Error] Invalid symbol on line " << ln << std::endl;
-               exit(1);
-            }
-            argtypes.push_back(v_MEMPTR);
-            continue;
-         }
          if (arg.size() == 3 && arg[0] == '\'' && arg[2] == '\'') {
             argtypes.push_back(v_CHR);
             continue;
@@ -91,7 +83,6 @@ std::vector<int> getArgTypeList(std::vector<std::string> args, size_t ln = 1) {
             case '"': argid = v_STR; break;
             case '$': argid = v_REG; break;
             case '#': argid = v_VAR; break;
-            case '*': argid = v_MEM; break;
          }
          argtypes.push_back(argid);
    }
@@ -142,6 +133,9 @@ void parseVar(std::vector<std::string> line, Instruction& result, size_t ln = 1)
    } else if (result.arg_types[0] == v_CHR) {
       line[0] = parseChr(line[0]);
       result.args = line;
+   } else if (result.arg_types[0] == v_DAT || result.arg_types[0] == v_VAR || result.arg_types[0] == v_REG) {
+      std::cerr << "[Parse Error] Variable arg type invalid on line " << ln << std::endl;
+      exit(1);
    } else {
       result.args = line;
    }

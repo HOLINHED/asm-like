@@ -12,6 +12,7 @@
 #define INVALID_ARGS 4       // invalid arguments for instruction
 #define REG_DNE 5            // register does not exist.
 #define REDEC_ERR 6          // variable already declared
+#define VAR_NOT_FOUND 7       // variable not found
 
 std::map<std::string, VarCont> vars;
 
@@ -55,9 +56,8 @@ int memmanip(const Instruction& ins) {
    return 0;
 }
 
-int mov(const Instruction& ins) {
-   return 0;
-}
+//IMPLEMENT mov() function
+#include "execFunc/mov.cpp"
 
 //IMPLEMENT rcopy() function
 #include "execFunc/rcopy.cpp"
@@ -78,14 +78,22 @@ int var(const Instruction& ins) {
    if (vars.find(ins.uid) != vars.end()) {
       vars[ins.uid].value = ins.args[0];
       vars[ins.uid].type = ins.arg_types[0];
+      memory[vars[ins.uid].memaddr].value = ins.args[0];
+      memory[vars[ins.uid].memaddr].type = ins.arg_types[0];
       return 0;
    }
 
    VarCont toinsert;
    toinsert.value = ins.args[0];
    toinsert.type = ins.arg_types[0];
+   toinsert.memaddr = memory.size();
 
    vars[ins.uid] = toinsert;
+
+   MemoryUnit instomem;
+   instomem.value = toinsert.value;
+   instomem.type = toinsert.type;
+   memory.push_back(instomem);
 
    return 0;
 }
@@ -110,6 +118,11 @@ void saveDebugLog() {
    outstr << "- [Variables] -------------------\n";
    for (const auto &pair : vars) {
      outstr << pair.first << ": " << vars[pair.first].value << " [" << vars[pair.first].type << "]\n"; 
+   }
+
+   outstr << "- [Memory] ----------------------\n";
+   for (size_t i = 0; i < memory.size(); i++) {
+      outstr << "m[" << i << "] = " << std::any_cast<std::string>(memory[i].value) << "    {Type: " << memory[i].type << "}\n";
    }
 
    outstr << "- [INT Registers] ---------------\n";
@@ -213,6 +226,22 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
             if (r == REG_DNE) {
                std::cout << "[Runtime Error] Invalid registers in copy instruction.\n";
                return REG_DNE;
+            }
+         }
+
+         if (ins == i_mov) {
+            const int r = mov(inslist[i]);
+            if (r == INVALID_ARGS) {
+               std::cout << "[Runtime Error] 'mov' requires 2 arguments of type 'REG'/'DAT', 'REG'\n";
+               return INVALID_ARGS;
+            }
+            if (r == REG_DNE) {
+               std::cout << "[Runtime Error] Invalid register in 'mov' instruction.\n";
+               return REG_DNE;
+            }
+            if (r == VAR_NOT_FOUND) {
+               std::cout << "[Runtime Error] Cannot find variable in 'mov' instruction.\n";
+               return VAR_NOT_FOUND;
             }
          }
 

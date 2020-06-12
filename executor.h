@@ -2,6 +2,7 @@
 #define H_DK9EXEC
 
 #include <vector>
+#include <any>
 #include "instruction_ids.h"
 #include "inst_obj.h"
 
@@ -12,10 +13,11 @@
 struct VarCont {
    std::string value;
    int type;
+   size_t memaddr;
 };
 
 struct MemoryUnit {
-   void* value;
+   std::any value;
    int type;
 };
 

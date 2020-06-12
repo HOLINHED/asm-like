@@ -2,7 +2,6 @@
 #include <sstream>
 #include <string>
 #include <fstream>
-
 #include "ins_map.h"
 
 int main() {
@@ -15,8 +14,6 @@ int main() {
       "REG",
       "VAR",
       "LBL",
-      "MEM",
-      "MEMPTR",
       "NUM_F",
       "CHR",
    };

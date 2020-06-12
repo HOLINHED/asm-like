@@ -1,10 +1,15 @@
 r = register
 d = data
-m = memory (Special Symbols: top, front, itop)
+m = memory (Special Symbols: msize)
 lbl = label
 
 Registers $0-$9 can hold 64 bit values.
 Registers $f0-$f4 can hold 64 bit floating point values.
+
+--- li | instructions
+0 - print num
+1 - print char
+2 - print string
 
 -- CORE --
 li (int) - Loads an instruction into the flag ($B)

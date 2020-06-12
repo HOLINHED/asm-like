@@ -9,6 +9,10 @@
 
 const static size_t INSTRUCTION_SIZE = sizeof(INSTRUCTION_IDS) / sizeof(INSTRUCTION_IDS[0]);
 
+std::string parseStr(const std::string&);
+
+std::string parseChr(const std::string&);
+
 int isNum(std::string);
 
 std::vector<int> getArgTypeList(std::vector<std::string>, size_t);

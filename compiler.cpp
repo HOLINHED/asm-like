@@ -1,5 +1,5 @@
 #include <iostream>
-#include <sstream> 
+#include <sstream>
 #include <fstream>
 #include "lexer.h"
 #include "parser.h"
