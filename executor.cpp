@@ -12,7 +12,9 @@
 #define INVALID_ARGS 4       // invalid arguments for instruction
 #define REG_DNE 5            // register does not exist.
 #define REDEC_ERR 6          // variable already declared
-#define VAR_NOT_FOUND 7       // variable not found
+#define VAR_NOT_FOUND 7      // variable not found
+#define INVALID_FLAG 8       // instruction does not exist.
+#define INVALID_ADDRESS 9    // memory address is invalid.
 
 std::map<std::string, VarCont> vars;
 
@@ -66,9 +68,7 @@ int compare(const Instruction& ins) {
    return 0;
 }
 
-int syscll() {
-   return 0;
-}
+#include "execFunc/syscll.cpp"
 
 int var(const Instruction& ins) {
    if (ins.args.size() != 1) {
@@ -115,21 +115,21 @@ void saveDebugLog() {
    }
    outstr << "$B - " << flag << std::endl;
 
-   outstr << "- [Variables] -------------------\n";
+   outstr << "\n- [Variables] -------------------\n";
    for (const auto &pair : vars) {
      outstr << pair.first << ": " << vars[pair.first].value << " [" << vars[pair.first].type << "]\n"; 
    }
 
-   outstr << "- [Memory] ----------------------\n";
+   outstr << "\n- [Memory] ----------------------\n";
    for (size_t i = 0; i < memory.size(); i++) {
       outstr << "m[" << i << "] = " << std::any_cast<std::string>(memory[i].value) << "    {Type: " << memory[i].type << "}\n";
    }
 
-   outstr << "- [INT Registers] ---------------\n";
+   outstr << "\n- [INT Registers] ---------------\n";
    for (size_t i = 0; i < 10; i++) {
       outstr << "r[$" << i << "] = " << registers[i] << std::endl;
    }
-   outstr << "- [FLOAT Registers] -------------\n";
+   outstr << "\n- [FLOAT Registers] -------------\n";
    for (size_t i = 0; i < 5; i++) {
       outstr << "f[$" << i << "] = " << registers_f[i] << std::endl;
    }
@@ -148,12 +148,6 @@ void saveDebugLog() {
 }
 
 int exec(std::vector<Instruction> inslist, bool strict = true) {
-
-   registers[0] = 10;
-   registers[1] = 20;
-   registers_f[0] = 5.6;
-   registers_f[1] = 10.7;
-
    for (size_t i = 0; i < inslist.size(); i++) {
       const int ins = inslist[i].type;
 
@@ -166,12 +160,12 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
       if (runFlag == 1) {
          if (ins == i_VAR) {
             if (var(inslist[i]) == 1) {
-               std::cerr << "[Runtime Error] Variable assignment requires 1 argument.\n";
+               std::cerr << "[Runtime Error] Variable assignment requires 1 argument. On instruction " << i << std::endl;
                return INVALID_ARGS;
             }
          }
          if (ins != i_VAR) {
-            std::cerr << "[Runtime Error] Invalid instructions present during .data flag.\n";
+            std::cerr << "[Runtime Error] Invalid instructions present during .data flag. On instruction " << i << std::endl;
             return INVALID_INS_DAT;
          }
          continue;
@@ -183,20 +177,20 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
          if (ins == i_return) return 0;
          if (ins == i_VAR) {
             if (strict) {
-               std::cerr << "[Runtime Error] Variable declaration during .main flag illegal in strict mode.\n";
+               std::cerr << "[Runtime Error] Variable declaration during .main flag illegal in strict mode. On instruction " << i << std::endl;
                return VAR_IN_MAIN;
             }
             const int r = var(inslist[i]);
             if (var(inslist[i]) != 0) {
                if (r == INVALID_ARGS) {
-                  std::cerr << "[Runtime Error] Variable assignment requires 1 argument.\n";
+                  std::cerr << "[Runtime Error] Variable assignment requires 1 argument. On instruction " << i << std::endl;
                }
                return r;
             }
          }
          if (ins == i_li) {
             if (inslist[i].args.size() != 1 || inslist[i].arg_types[0] != v_NUM) {
-               std::cerr << "[Runtime Error] Instruction li expects 1 argument of type 'NUM'.\n";  
+               std::cerr << "[Runtime Error] Instruction li expects 1 argument of type 'NUM'. On instruction " << i << std::endl;
                return INVALID_ARGS;
             }
 
@@ -204,14 +198,14 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
          }
          if (ins == i_la) {
             if (inslist[i].args.size() != 1 || inslist[i].arg_types[0] != v_REG) {
-               std::cerr << "[Runtime Error] Instruction la expects 1 argument of type 'REG'.\n";  
+               std::cerr << "[Runtime Error] Instruction la expects 1 argument of type 'REG'. On instruction " << i << std::endl;
                return INVALID_ARGS;
             }
 
             const int rnum = getRegId(inslist[i].args[0]);
 
             if (rnum == REG_ERR) {
-               std::cerr << "[Runtime Error] Register \"" << inslist[i].args[0] << "\" does not exist.\n";
+               std::cerr << "[Runtime Error] Register \"" << inslist[i].args[0] << "\" does not exist. On instruction " << i << std::endl;
                return REG_DNE;
             }
 
@@ -220,11 +214,11 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
          if (ins == i_copy) {
             const int r = rcopy(inslist[i]);
             if (r == 1) {
-               std::cout << "[Runtime Error] Copy requires 2 arguments of type 'REG'.\n";
+               std::cout << "[Runtime Error] Copy requires 2 arguments of type 'REG'. On instruction " << i << std::endl;
                return INVALID_ARGS;
             }
             if (r == REG_DNE) {
-               std::cout << "[Runtime Error] Invalid registers in copy instruction.\n";
+               std::cout << "[Runtime Error] Invalid registers in copy instruction. On instruction " << i << std::endl;
                return REG_DNE;
             }
          }
@@ -232,16 +226,28 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
          if (ins == i_mov) {
             const int r = mov(inslist[i]);
             if (r == INVALID_ARGS) {
-               std::cout << "[Runtime Error] 'mov' requires 2 arguments of type 'REG'/'DAT', 'REG'\n";
+               std::cout << "[Runtime Error] 'mov' requires 2 arguments of type 'REG'/'DAT', 'REG' On instruction " << i << std::endl;
                return INVALID_ARGS;
             }
             if (r == REG_DNE) {
-               std::cout << "[Runtime Error] Invalid register in 'mov' instruction.\n";
+               std::cout << "[Runtime Error] Invalid register in 'mov' instruction. On instruction " << i << std::endl;
                return REG_DNE;
             }
             if (r == VAR_NOT_FOUND) {
-               std::cout << "[Runtime Error] Cannot find variable in 'mov' instruction.\n";
+               std::cout << "[Runtime Error] Cannot find variable in 'mov' instruction. On instruction " << i << std::endl;
                return VAR_NOT_FOUND;
+            }
+         }
+
+         if (ins == i_syscall) {
+            const int r = syscll();
+            if (r == INVALID_FLAG) {
+               std::cout << "[Runtime Error] Invalid syscall flag. On instruction " << i << std::endl;
+               return INVALID_FLAG;
+            }
+            if (r == INVALID_ADDRESS) {
+               std::cout << "[Runtime Error] Invalid memory address for syscall. On instruction " << i << std::endl;
+               return INVALID_ADDRESS;
             }
          }
 
@@ -250,7 +256,7 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
 
       // invalid, instructions outside of either flag.
       if (runFlag < 0) {
-         std::cerr << "[Runtime Error] Instructions present outside of .data and/or .main.\n";
+         std::cerr << "[Runtime Error] Instructions present outside of .data and/or .main. On instruction " << i << std::endl;
          return ILLEGAL_INS;
       }
       // end for loop

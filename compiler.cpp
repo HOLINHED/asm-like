@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 
    if (true || run) {
       int rcode = exec(parseresult, strict);
-      std::cout << "Exited with code " << rcode << std::endl;
+      std::cout << "\nExited with code " << rcode << std::endl;
    } else {
 
    }

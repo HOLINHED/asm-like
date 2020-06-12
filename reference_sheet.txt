@@ -10,6 +10,9 @@ Registers $f0-$f4 can hold 64 bit floating point values.
 0 - print num
 1 - print char
 2 - print string
+3 - input num
+4 - input char
+5 - input string
 
 -- CORE --
 li (int) - Loads an instruction into the flag ($B)
