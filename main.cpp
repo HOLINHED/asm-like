@@ -3,7 +3,6 @@
 #include <fstream>
 #include "lexer.h"
 #include "parser.h"
-#define DK9CFLAG 1
 #include "executor.h"
 
 int main(int argc, char** argv) {
