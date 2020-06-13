@@ -41,4 +41,5 @@
 #define v_LBL 335
 #define v_NUM_F 336
 #define v_CHR 337
+#define v_MEM 338
 #endif

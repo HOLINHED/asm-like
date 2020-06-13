@@ -83,6 +83,7 @@ std::vector<int> getArgTypeList(std::vector<std::string> args, size_t ln = 1) {
             case '"': argid = v_STR; break;
             case '$': argid = v_REG; break;
             case '#': argid = v_VAR; break;
+            case '*': argid = v_MEM; break;
          }
          argtypes.push_back(argid);
    }

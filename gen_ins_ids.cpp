@@ -16,6 +16,7 @@ int main() {
       "LBL",
       "NUM_F",
       "CHR",
+      "MEM",
    };
 
    //const size_t ARG_LSIZE = 9;

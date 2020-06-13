@@ -17,7 +17,6 @@
 #define INVALID_ADDRESS 9    // memory address is invalid.
 
 std::map<std::string, VarCont> vars;
-
 std::vector<MemoryUnit> memory;
 long registers[10]{0};
 double registers_f[5]{0};
@@ -40,6 +39,60 @@ int getRegId(std::string reg) {
 
    // negetive register means it's a floating point. (id * -1) - 1 to convert to index
    return (rnum * (freg ? -1 : 1)) - freg; 
+}
+
+long double evalData(std::string value, int type) {
+   if (type == v_MEM) {
+      const size_t addr = std::stoi(value.substr(1));
+
+      if (addr >= memory.size()) {
+         std::cout << "[Runtime Error] evalData: Failed to bind v_MEM '" << value << "' to a value.\n";
+         exit(1);
+      }
+
+      return evalData(std::any_cast<std::string>(memory[addr].value), memory[addr].type);
+   }
+   if (type == v_DAT) {
+      if (value == "msize") return memory.size();
+      else {
+         std::cout << "[Runtime Error] evalData: Failed to bind v_DAT '" << value << "' to a value.\n";
+         exit(1);
+      }
+   } else if (type == v_NUM) {
+      return std::stol(value); 
+   } else if (type == v_NUM_F) {
+      return std::stod(value);
+   } else if (type == v_STR) {
+      return value.size();
+   } else if (type == v_REG) {
+      const int regid = getRegId(value);
+      if (regid == REG_ERR) {
+         std::cout << "[Runtime Error] evalData: Failed to bind v_REG '" << value << "' to a value.\n";
+         exit(1);
+      }
+      if (regid == REG_PTR) return pointer;
+      if (regid == REG_FLG) return flag;
+      if (regid < 0) {
+         return registers_f[(regid * -1) - 1];
+      } else {
+         return registers[regid];
+      }
+   } else if (type == v_VAR) {
+      const std::string pstr = value.substr(1);
+      if (vars.find(pstr) != vars.end()) {
+         return vars[pstr].memaddr;
+      } else {
+         std::cout << "[Runtime Error] evalData: Failed to bind v_VAR '" << value << "' to a value.\n";
+         exit(1);
+      }
+   } else if (type == v_CHR) {
+      return value[0];
+   } else {
+      std::cout << "[Runtime Error] evalData: Invalid argument for data evaluation.\n";
+      exit(1);
+   }
+
+   return 0;
 }
 
 int math(const Instruction& ins) {
@@ -184,10 +237,8 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
                return VAR_IN_MAIN;
             }
             const int r = var(inslist[i]);
-            if (var(inslist[i]) != 0) {
-               if (r == INVALID_ARGS) {
-                  std::cerr << "[Runtime Error] Variable assignment requires 1 argument. On instruction " << i << std::endl;
-               }
+            if (r == INVALID_ARGS) {
+               std::cerr << "[Runtime Error] Variable assignment requires 1 argument. On instruction " << i << std::endl;
                return r;
             }
          }

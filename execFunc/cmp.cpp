@@ -18,15 +18,20 @@ int compare(const Instruction& ins) {
       return INVALID_ARGS;
    }
 
-   std::cout << "HELLO, CMP\n";
-
    if (ins.args[0] == ins.args[1]) {
       setCmpRes(0);
       return 0;
    }
 
-   long double lhs;
-   long double rhs;
+   long double lhs = evalData(ins.args[0], ins.arg_types[0]);
+   long double rhs = evalData(ins.args[1], ins.arg_types[1]);
+
+   std::cout << "lhs: " << lhs << std::endl;
+   std::cout << "rhs: " << rhs << std::endl;
+
+   if (lhs < rhs) setCmpRes(-1);
+   if (lhs == rhs) setCmpRes(0);
+   if (lhs > rhs) setCmpRes(1);
 
    return 0;
 }

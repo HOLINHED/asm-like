@@ -21,9 +21,9 @@ struct MemoryUnit {
    int type;
 };
 
-std::string parseStr(const std::string&);
-
 int getRegId(std::string);
+
+long double evalData(std::string, int);
 
 int math(const Instruction&);
 
