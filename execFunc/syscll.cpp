@@ -9,6 +9,7 @@
 5 - input char
 6 - input string (non format)
 7 - input string (format)
+8 - generate random number
 10 - print num newline
 11 - print char newline
 */
@@ -115,6 +116,19 @@ int syscll() {
       }; break;
       case 7: {
          inputStr(2);
+      }; break;
+      case 8: {
+         int r = rand();
+
+         if (pointer == REG_PTR) {
+            pointer = r;
+         } else if (pointer == REG_FLG) {
+            flag = r;
+         } else if (pointer < 0) {
+            registers_f[(pointer * -1) - 1] = r;
+         } else {
+            registers[pointer] = r;
+         }
       }; break;
       case 10: {
          outNum();

@@ -148,6 +148,10 @@ void saveDebugLog() {
 }
 
 int exec(std::vector<Instruction> inslist, bool strict = true) {
+
+   //init
+   srand(time(0));
+
    for (size_t i = 0; i < inslist.size(); i++) {
       const int ins = inslist[i].type;
 

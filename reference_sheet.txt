@@ -7,12 +7,17 @@ Registers $0-$9 can hold 64 bit values.
 Registers $f0-$f4 can hold 64 bit floating point values.
 
 --- li | instructions
-0 - print num
-1 - print char
+0 - print num no newline
+1 - print char no newline
 2 - print string
-3 - input num
-4 - input char
-5 - input string
+3 - input num (non float)
+4 - input num (float)
+5 - input char
+6 - input string (non format)
+7 - input string (format)
+8 - generate random number - c++ rand() func
+10 - print num newline
+11 - print char newline
 
 -- CORE --
 li (int) - Loads an instruction into the flag ($B)
