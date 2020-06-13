@@ -43,7 +43,13 @@ int getRegId(std::string reg) {
 
 long double evalData(std::string value, int type) {
    if (type == v_MEM) {
-      const size_t addr = std::stoi(value.substr(1));
+      const std::string mv = value.substr(1);
+      size_t addr;
+      if (mv[0] == '$'){
+         addr = evalData(mv, v_REG);
+      } else {
+         addr = std::stoi(mv);
+      }
 
       if (addr >= memory.size()) {
          std::cout << "[Runtime Error] evalData: Failed to bind v_MEM '" << value << "' to a value.\n";
