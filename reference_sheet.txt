@@ -1,6 +1,6 @@
 r = register
 d = data
-m = memory (Special Symbols: msize)
+m = memory (Special Symbols: msize, mtop)
 lbl = label
 
 Registers $0-$9 can hold 64 bit values.

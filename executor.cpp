@@ -41,6 +41,27 @@ int getRegId(std::string reg) {
    return (rnum * (freg ? -1 : 1)) - freg; 
 }
 
+template<class T>
+void setRegData(int regid, T dat) {
+   if (regid == REG_PTR) {
+      setRegData<T>(pointer, dat);
+   } else if (regid == REG_FLG) {
+      flag = dat;
+   } else if (regid < 0) {
+      registers_f[(regid * -1) - 1] = dat;
+   } else {
+      registers[regid] = dat;
+   }
+}
+
+size_t pushToMem(std::any value, int type) {
+   MemoryUnit toInsert;
+   toInsert.value = value;
+   toInsert.type = type;
+   memory.push_back(toInsert);
+   return memory.size() - 1;
+}
+
 long double evalData(std::string value, int type) {
    if (type == v_MEM) {
       const std::string mv = value.substr(1);
@@ -49,9 +70,13 @@ long double evalData(std::string value, int type) {
          addr = evalData(mv, v_REG);
       } else if (mv[0] == '#') {
          addr = evalData(mv, v_VAR);
+      } else if (mv[0] == '*') {
+         addr = evalData(mv, v_MEM);
+      } else if (mv == "msize" || mv == "mtop") {
+         addr = evalData(mv, v_DAT);
       } else {
          addr = std::stoi(mv);
-      }
+      } 
 
       if (addr >= memory.size()) {
          std::cout << "[Runtime Error] evalData: Failed to bind v_MEM '" << value << "' to a value.\n";
@@ -62,6 +87,7 @@ long double evalData(std::string value, int type) {
    }
    if (type == v_DAT) {
       if (value == "msize") return memory.size();
+      if (value == "mtop") return memory.size() - 1;
       else {
          std::cout << "[Runtime Error] evalData: Failed to bind v_DAT '" << value << "' to a value.\n";
          exit(1);
