@@ -27,7 +27,7 @@ int getRegId(std::string);
 
 int math(const Instruction&);
 
-int jump(int);
+bool jump(const Instruction&);
 
 int bitwise(const Instruction&);
 

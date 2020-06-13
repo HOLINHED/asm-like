@@ -46,9 +46,8 @@ int math(const Instruction& ins) {
    return 0;
 }
 
-int jump(int opCode) {
-   return 0;
-}
+// implement jmp instructions
+#include "execFunc/jump.cpp"
 
 int bitwise(const Instruction& ins) {
    return 0;
@@ -64,10 +63,10 @@ int memmanip(const Instruction& ins) {
 //IMPLEMENT rcopy() function
 #include "execFunc/rcopy.cpp"
 
-int compare(const Instruction& ins) {
-   return 0;
-}
+//IMPLEMENT cmp function
+#include "execFunc/cmp.cpp"
 
+// IMPLEMENT syscall function
 #include "execFunc/syscll.cpp"
 
 int var(const Instruction& ins) {
@@ -252,6 +251,21 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
             if (r == INVALID_ADDRESS) {
                std::cout << "[Runtime Error] Invalid memory address for syscall. On instruction " << i << std::endl;
                return INVALID_ADDRESS;
+            }
+         }
+
+         if (ins == i_cmp) {
+            const int r = compare(inslist[i]);
+            if (r == INVALID_ARGS) {
+               std::cout << "[Runtime Error] 'cmp' contains invalid arguments. On instruction " << i << std::endl;
+               return INVALID_ARGS;
+            }
+         }
+
+         if (ins >= i_jeq && ins <= i_jmp) {
+            const bool r = jump(inslist[i]);
+            if (r) {
+               i = inslist[i].jmp_index;
             }
          }
 
