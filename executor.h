@@ -25,7 +25,8 @@ int getRegId(std::string);
 
 size_t pushToMem(std::any, int);
 
-long double evalData(std::string, int);
+template<class T = long double>
+T evalData(std::string, int);
 
 int math(const Instruction&);
 

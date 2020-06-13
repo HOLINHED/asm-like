@@ -15,6 +15,7 @@
 #define VAR_NOT_FOUND 7      // variable not found
 #define INVALID_FLAG 8       // instruction does not exist.
 #define INVALID_ADDRESS 9    // memory address is invalid.
+#define FLOAT_MOD_ERR 10
 
 std::map<std::string, VarCont> vars;
 std::vector<MemoryUnit> memory;
@@ -62,7 +63,8 @@ size_t pushToMem(std::any value, int type) {
    return memory.size() - 1;
 }
 
-long double evalData(std::string value, int type) {
+template<class T = long double>
+T evalData(std::string value, int type) {
    if (type == v_MEM) {
       const std::string mv = value.substr(1);
       size_t addr;
@@ -129,9 +131,8 @@ long double evalData(std::string value, int type) {
    return 0;
 }
 
-int math(const Instruction& ins) {
-   return 0;
-}
+// implement math instructions
+#include "execFunc/math.cpp"
 
 // implement jmp instructions
 #include "execFunc/jump.cpp"
@@ -351,6 +352,22 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
             const bool r = jump(inslist[i]);
             if (r) {
                i = inslist[i].jmp_index;
+            }
+         }
+
+         if (ins >= i_add && ins <= i_mod) {
+            const int r = math(inslist[i]);
+            if (r == INVALID_ARGS) {
+               std::cout << "[Runtime Error] 'add-mod' contains invalid arguments. On instruction " << i << std::endl;
+               return INVALID_ARGS;
+            }
+            if (r == REG_DNE) {
+               std::cout << "[Runtime Error] Invalid register. On instruction " << i << std::endl;
+               return REG_DNE;
+            }
+            if (r == FLOAT_MOD_ERR) {
+               std::cout << "[Runtime Error] Floating point modulo. On instruction " << i << std::endl;
+               return FLOAT_MOD_ERR;
             }
          }
 
