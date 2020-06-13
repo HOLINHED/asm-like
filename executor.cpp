@@ -47,6 +47,8 @@ long double evalData(std::string value, int type) {
       size_t addr;
       if (mv[0] == '$'){
          addr = evalData(mv, v_REG);
+      } else if (mv[0] == '#') {
+         addr = evalData(mv, v_VAR);
       } else {
          addr = std::stoi(mv);
       }
