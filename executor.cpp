@@ -4,6 +4,7 @@
 #include <fstream>
 #include "instruction_ids.h"
 #include "executor.h"
+#include "serialization.h"
 
 // Error Codes 
 #define INVALID_INS_DAT 1    // invalid instructions in .data
@@ -42,7 +43,7 @@ int getRegId(std::string reg) {
    return (rnum * (freg ? -1 : 1)) - freg; 
 }
 
-template<class T>
+template<class T = long>
 void setRegData(int regid, T dat) {
    if (regid == REG_PTR) {
       setRegData<T>(pointer, dat);
@@ -53,6 +54,23 @@ void setRegData(int regid, T dat) {
    } else {
       registers[regid] = dat;
    }
+}
+
+template<class T = long>
+T getRegData(int regid) {
+   if (regid == REG_PTR) {
+      return getRegData<T>(pointer);
+   } else if (regid == REG_FLG) {
+      return flag;
+   } else if (regid < 0) {
+      return registers_f[(regid * -1) - 1];
+   } else {
+      return registers[regid];
+   }
+
+   std::cerr << "[Runtime Error] Could not retrive register data from " << regid << std::endl;
+   exit(1);
+   return 0;
 }
 
 size_t pushToMem(std::any value, int type) {
@@ -345,6 +363,10 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
             if (r == INVALID_ARGS) {
                std::cout << "[Runtime Error] 'cmp' contains invalid arguments. On instruction " << i << std::endl;
                return INVALID_ARGS;
+            }
+            if (r == REG_DNE) {
+               std::cout << "[Runtime Error] Invalid register on instruction " << i << std::endl;
+               return REG_DNE;
             }
          }
 

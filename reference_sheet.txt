@@ -33,11 +33,11 @@ mdel (m) - Deletes memory from stack.
 return - Terminates program.
 
 -- MATH --
-add (r1, r2) | (d, r) | (r, d) | (d, d) - Performs addition on two data. Stores result in $A.
-sub (r1, r2) | (d, r) | (r, d) | (d, d) - Performs subtraction on two data. Stores result in $A.
-mul (r1, r2) | (d, r) | (r, d) | (d, d) - Performs multiplication on two data. Stores result in $A.
-div (r1, r2) | (d, r) | (r, d) | (d, d) - Performs division on two data. Stores result in $A.
-mod (r1, r2) | (d, r) | (r, d) | (d, d) - Performs modulo on two data. Stores result in $A.
+add (r1, r2) | (d, r) | (r, d) | (d, d) & (r) - Performs addition on two data. Stores result in $A. Optional register in 3rd argument which will store the result there instead of $A.
+sub (r1, r2) | (d, r) | (r, d) | (d, d) & (r) - Performs subtraction on two data. Stores result in $A. Optional register in 3rd argument which will store the result there instead of $A.
+mul (r1, r2) | (d, r) | (r, d) | (d, d) & (r) - Performs multiplication on two data. Stores result in $A. Optional register in 3rd argument which will store the result there instead of $A.
+div (r1, r2) | (d, r) | (r, d) | (d, d) & (r) - Performs division on two data. Stores result in $A. Optional register in 3rd argument which will store the result there instead of $A.
+mod (r1, r2) | (d, r) | (r, d) | (d, d) & (r) - Performs modulo on two data. Stores result in $A. Optional register in 3rd argument which will store the result there instead of $A.
 
 -- LOGIC -- 
 cmp (r1, r2) | (d, r) | (r, d) | (d1, d2) - Compares 2 data. 1 if arg1 > arg2, 0 if arg1 = arg2, -1 if arg1 < arg2.

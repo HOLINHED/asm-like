@@ -4,6 +4,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "executor.h"
+#include "serialization.h"
 
 int main(int argc, char** argv) {
 
@@ -15,9 +16,11 @@ int main(int argc, char** argv) {
    if (std::string(argv[1]) == "-h" || std::string(argv[1]) == "-help") {
       std::cout << "Usage: " << argv[0] << " <filename> <?args>\n\n"
                 << "-help (-h) Displays help for program.\n"
-                << "-dump (-d) Dumps values of each register into a file.\n"
+                << "-dump (-d) Dumps debug logs into file.\n"
                 << "-run (-r) Executes the program after compiling.\n"
                 << "-nostrict (-s) Turns off strict mode during runtime.\n"
+                << "-runfile (-rf) Runs program from a precompiled file.\n"
+                << "-outfile (-o) Sets output file for compiled code.\n"
                 ;
       exit(0);   
    }
@@ -25,6 +28,8 @@ int main(int argc, char** argv) {
    bool dump = false;
    bool run = false;
    bool strict = true;
+   bool runfile = false;
+   std::string compFileName = "out.nsn.o";
 
    if (argc >= 3) {
       for (int i = 2; i < argc; i++) {
@@ -33,9 +38,30 @@ int main(int argc, char** argv) {
          if (arg == "-dump" || arg == "-d") {
             dump = true;
          } else if (arg == "-run" || arg == "-r") {
+            if (runfile) {
+               std::cerr << "Invaild arguments. -r and -rf cannot both be true.\n";
+               exit(1);
+            }
             run = true;
          } else if (arg == "-nostrict" || arg == "-s") {
             strict = false;
+         } else if (arg == "-runfile" || arg == "-rf") {
+            if (run) {
+               std::cerr << "Invaild arguments. -r and -rf cannot both be true.\n";
+               exit(1);
+            }
+            runfile = true;
+         } else if (arg == "-outfile" || arg == "-o") {
+            if (run || runfile) {
+               std::cerr << "Invalid arguments. -o and -r/-rf cannot both be true.\n";
+               exit(1);
+            }
+            if (i + 1 == argc) {
+               std::cerr << "Invalid arguments. -o expects a filename.\n";
+               exit(1);
+            } 
+            compFileName = std::string(argv[i + 1]);
+            i += 1;
          }
          else {
             std::cerr << "Unrecognized argument \"" << arg << "\"\n";
@@ -45,29 +71,31 @@ int main(int argc, char** argv) {
    }
 
    std::ifstream file(argv[1]);
+   std::stringstream* buffer = new std::stringstream;
+   *buffer << file.rdbuf();
 
    if (!file) {
       std::cerr << "Error loading file \"" << argv[1] << "\".\n";
       exit(1);
    }
 
-   std::stringstream* buffer = new std::stringstream;
-   *buffer << file.rdbuf();
+   if (!runfile) {
 
-   file.close();
+      file.close();
 
-   auto lexresult = lex(buffer);
-   
-   auto parseresult = parse(lexresult);
+      auto lexresult = lex(buffer);
+      
+      auto parseresult = parse(lexresult);
 
-   if (true || run) {
-      int rcode = exec(parseresult, strict);
-      std::cout << "\nExited with code " << rcode << std::endl;
-   } else {
+      if (run) {
+         int rcode = exec(parseresult, strict);
+         std::cout << "\nExited with code " << rcode << std::endl;
+      } else {
+         //compile to source
+         serialize(parseresult, compFileName);
+      }
 
-   }
-
-   if (dump) {
+      if (dump) {
       std::stringstream finaldout;
 
       finaldout << "======= LEXER RESULT =======\n";
@@ -115,7 +143,16 @@ int main(int argc, char** argv) {
       dumpFile.close();
 
       std::cout << "==> Dump File Created Successfully!\n";
-      saveDebugLog();
+      if (run) saveDebugLog();
+   }
+
+   } else {
+      // exec serialized file
+      auto parsed = deserialize(buffer);
+
+      exec(parsed, strict);
+
+      if (dump) saveDebugLog();
    }
 
    delete buffer;
