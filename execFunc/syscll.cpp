@@ -10,6 +10,7 @@
 6 - input string (non format)
 7 - input string (format)
 8 - generate random number
+9 - reset (clear registers and memory)
 10 - print num newline
 11 - print char newline
 */
@@ -129,6 +130,14 @@ int syscll() {
          } else {
             registers[pointer] = r;
          }
+      }; break;
+      case 9: {
+         vars.clear();
+         memory.clear();
+         for (size_t i = 0; i < 10; i++) registers[i] = 0;
+         for (size_t i = 0; i < 5; i++) registers_f[i] = 0;
+         pointer = 0;
+         flag = 0;
       }; break;
       case 10: {
          outNum();
