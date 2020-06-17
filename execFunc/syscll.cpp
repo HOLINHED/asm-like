@@ -101,7 +101,7 @@ int syscll() {
             return INVALID_ADDRESS;
          }
 
-         std::cout << std::any_cast<std::string>(memory[memaddr].value);
+         std::cout << memory[memaddr].value;
       }; break;
       case 3: {
          inputNum<long>();

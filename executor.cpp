@@ -16,10 +16,11 @@
 #define VAR_NOT_FOUND 7      // variable not found
 #define INVALID_FLAG 8       // instruction does not exist.
 #define INVALID_ADDRESS 9    // memory address is invalid.
-#define FLOAT_MOD_ERR 10
+#define FLOAT_MOD_ERR 10     // 
 
 std::map<std::string, VarCont> vars;
 std::vector<MemoryUnit> memory;
+std::vector<size_t> memcontroller;
 long registers[10]{0};
 double registers_f[5]{0};
 int pointer = 0;
@@ -73,9 +74,18 @@ T getRegData(int regid) {
    return 0;
 }
 
-size_t pushToMem(std::any value, int type) {
+template<class T = std::string>
+size_t pushToMem(T value, int type) {
    MemoryUnit toInsert;
-   toInsert.value = value;
+   if (memcontroller.size() != 0) {
+      const size_t iindex = memcontroller[memcontroller.size() - 1];
+      toInsert.value = std::string(value);
+      toInsert.type = type;
+      memory[iindex] = toInsert;
+      memcontroller.erase(memcontroller.begin() + iindex);
+      return iindex;
+   }
+   toInsert.value = std::string(value);
    toInsert.type = type;
    memory.push_back(toInsert);
    return memory.size() - 1;
@@ -103,7 +113,7 @@ T evalData(std::string value, int type) {
          exit(1);
       }
 
-      return evalData(std::any_cast<std::string>(memory[addr].value), memory[addr].type);
+      return evalData(memory[addr].value, memory[addr].type);
    }
    if (type == v_DAT) {
       if (value == "msize") return memory.size();
@@ -159,9 +169,8 @@ int bitwise(const Instruction& ins) {
    return 0;
 }
 
-int memmanip(const Instruction& ins) {
-   return 0;
-}
+// implement memory manip functions
+#include "execFunc/mmanip.cpp"
 
 //IMPLEMENT mov() function
 #include "execFunc/mov.cpp"
@@ -191,15 +200,11 @@ int var(const Instruction& ins) {
    VarCont toinsert;
    toinsert.value = ins.args[0];
    toinsert.type = ins.arg_types[0];
-   toinsert.memaddr = memory.size();
+   //toinsert.memaddr = memory.size();
+
+   toinsert.memaddr = pushToMem(toinsert.value, toinsert.type);
 
    vars[ins.uid] = toinsert;
-
-   MemoryUnit instomem;
-   instomem.value = toinsert.value;
-   instomem.type = toinsert.type;
-   memory.push_back(instomem);
-
    return 0;
 }
 
@@ -222,12 +227,12 @@ void saveDebugLog() {
 
    outstr << "\n- [Variables] -------------------\n";
    for (const auto &pair : vars) {
-     outstr << pair.first << ": " << vars[pair.first].value << " [" << vars[pair.first].type << "]\n"; 
+     outstr << pair.first << ": " << vars[pair.first].value << "\t\t[" << vars[pair.first].type << "]\t{" << vars[pair.first].memaddr << "}\n"; 
    }
 
    outstr << "\n- [Memory] ----------------------\n";
    for (size_t i = 0; i < memory.size(); i++) {
-      outstr << "m[" << i << "] = " << std::any_cast<std::string>(memory[i].value) << "    {Type: " << memory[i].type << "}\n";
+      outstr << "m[" << i << "] = " << memory[i].value << "    {Type: " << memory[i].type << "}\n";
    }
 
    outstr << "\n- [INT Registers] ---------------\n";
@@ -390,6 +395,22 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
             if (r == FLOAT_MOD_ERR) {
                std::cout << "[Runtime Error] Floating point modulo. On instruction " << i << std::endl;
                return FLOAT_MOD_ERR;
+            }
+         }
+
+         if (ins >= i_mmov && ins <= i_mcpy) {
+            const int r = memmanip(inslist[i]);
+            if (r == INVALID_ARGS) {
+               std::cout << "[Runtime Error] Invalid args on instruction " << i << std::endl;
+               return INVALID_ARGS;
+            }
+            if (r == REG_DNE) {
+               std::cout << "[Runtime Error] Invalid register on instruction " << i << std::endl;
+               return REG_DNE;
+            }
+            if (r == INVALID_ADDRESS) {
+               std::cout << "[Runtime Error] Invaild memory address on instruction " << i << std::endl;
+               return INVALID_ADDRESS;
             }
          }
 

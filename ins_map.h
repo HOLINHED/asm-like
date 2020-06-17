@@ -26,6 +26,7 @@ const static std::string INSTRUCTION_IDS[] =
    "mmov",
    "mret",
    "mdel",
+   "minx",
    "mcpy",
    "band",
    "bor",

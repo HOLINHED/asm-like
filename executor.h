@@ -2,7 +2,6 @@
 #define H_DK9EXEC
 
 #include <vector>
-#include <any>
 #include "instruction_ids.h"
 #include "inst_obj.h"
 
@@ -17,13 +16,14 @@ struct VarCont {
 };
 
 struct MemoryUnit {
-   std::any value;
+   std::string value;
    int type;
 };
 
 int getRegId(std::string);
 
-size_t pushToMem(std::any, int);
+template<class T = std::string>
+size_t pushToMem(T, int);
 
 template<class T = long double>
 T evalData(std::string, int);
