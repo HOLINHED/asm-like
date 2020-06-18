@@ -27,11 +27,14 @@ mov (r1, r2) | (d, r) - Moves data to register.
 syscall - Calls instruction in flag ($B)
 copy (r1, r2) - Copies data from r1 to r2.
 jmp (lbl) - Jumps to label (unconditional).
-mmov (r, m) | (d, m) - Moves data to memory.
-mret (m) - Retreives data from memory into $A.
-mcpy (m1, m2) - Copies memory from m1 to m2.
-mdel (m) - Deletes memory from stack.
 return - Terminates program.
+
+-- MEMMANIP --
+mmov (r, m) | (d, m) - Moves data to memory.
+mret (m, r) - Retreives data from memory into $A, or r if defined..
+mcpy (m1, m2) - Copies memory from m1 to m2.
+minx (m, d, r) - Gets value at index at memory address, stores result in $A, or in r if defined.
+mdel (m) - Deletes memory from stack.
 
 -- MATH --
 add (r1, r2) | (d, r) | (r, d) | (d, d) & (r) - Performs addition on two data. Stores result in $A. Optional register in 3rd argument which will store the result there instead of $A.

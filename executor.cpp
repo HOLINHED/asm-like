@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <map>
+#include <time.h>
 #include <fstream>
 #include "instruction_ids.h"
 #include "executor.h"
@@ -82,7 +83,7 @@ size_t pushToMem(T value, int type) {
       toInsert.value = std::string(value);
       toInsert.type = type;
       memory[iindex] = toInsert;
-      memcontroller.erase(memcontroller.begin() + iindex);
+      memcontroller.pop_back();
       return iindex;
    }
    toInsert.value = std::string(value);
@@ -165,9 +166,7 @@ T evalData(std::string value, int type) {
 // implement jmp instructions
 #include "execFunc/jump.cpp"
 
-int bitwise(const Instruction& ins) {
-   return 0;
-}
+#include "execFunc/bitwise.cpp"
 
 // implement memory manip functions
 #include "execFunc/mmanip.cpp"
@@ -228,6 +227,11 @@ void saveDebugLog() {
    outstr << "\n- [Variables] -------------------\n";
    for (const auto &pair : vars) {
      outstr << pair.first << ": " << vars[pair.first].value << "\t\t[" << vars[pair.first].type << "]\t{" << vars[pair.first].memaddr << "}\n"; 
+   }
+
+   outstr << "\n- [Memory Controller] -----------\n";
+   for (size_t i = 0; i < memcontroller.size(); i++) {
+      outstr << '[' << i << "] = " << memcontroller[i] << std::endl;
    }
 
    outstr << "\n- [Memory] ----------------------\n";

@@ -134,6 +134,7 @@ int syscll() {
       case 9: {
          vars.clear();
          memory.clear();
+         memcontroller.clear();
          for (size_t i = 0; i < 10; i++) registers[i] = 0;
          for (size_t i = 0; i < 5; i++) registers_f[i] = 0;
          pointer = 0;
