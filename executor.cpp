@@ -418,6 +418,18 @@ int exec(std::vector<Instruction> inslist, bool strict = true) {
             }
          }
 
+         if (ins >= i_band && ins <= i_bsr) {
+            const int r = bitwise(inslist[i]);
+            if (r == INVALID_ARGS) {
+               std::cout << "[Runtime Error] Invalid args on instruction " << i << std::endl;
+               return INVALID_ARGS;
+            }
+            if (r == REG_DNE) {
+               std::cout << "[Runtime Error] Invalid register on instruction " << i << std::endl;
+               return REG_DNE;
+            }
+         }
+
          continue;//end .main flag loop
       }
 
