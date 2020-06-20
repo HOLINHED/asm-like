@@ -50,11 +50,7 @@ void inputStr(short type) { //1 - noformat, 2 - format
       registers[pointer] = memory.size();
    }
 
-   MemoryUnit ptomem;
-   ptomem.value = input;
-   ptomem.type = v_STR;
-
-   memory.push_back(ptomem);
+   pushToMem(input, v_STR);
 }
 
 template<class T>
